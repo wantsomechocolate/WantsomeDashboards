@@ -67,6 +67,8 @@ def parse_acquisuite():
 
         dummy = db.page_visit_count.insert(page_name=page_name, counter=1)
 
+        current_count=1
+
     else:
 
         current_count=counter_data.counter
