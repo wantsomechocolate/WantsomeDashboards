@@ -162,3 +162,6 @@ CREATE TABLE page_visit_data(
     vars VARCHAR(512)
 );
 success!
+timestamp: 2015-07-05T17:28:16.148279
+ALTER TABLE page_visit_data ADD page_name VARCHAR(512);
+success!

@@ -7,6 +7,7 @@ db.define_table('page_visit_count',
 	)
 
 db.define_table('page_visit_data',
+	Field('page_name'),
 	Field('last_visited','datetime'),
 	Field('args'),
 	Field('vars'),
