@@ -1,0 +1,21 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.NameError'> name 'counter_data' is not defined"
+p3
+sS'layer'
+p4
+S'/home/wantsomechocolate/Code/WantsomeDashboards/applications/dashboard/views/default/parse_acquisuite.html'
+p5
+sS'code'
+p6
+S"response.write('This page has been visited ', escape=False)\nresponse.write(counter_data)\nresponse.write(' times', escape=False)"
+p7
+sS'snapshot'
+p8
+(dp9
+sS'traceback'
+p10
+S'Traceback (most recent call last):\n  File "/home/wantsomechocolate/Code/WantsomeDashboards/gluon/restricted.py", line 227, in restricted\n    exec ccode in environment\n  File "/home/wantsomechocolate/Code/WantsomeDashboards/applications/dashboard/views/default/parse_acquisuite.html", line 2, in <module>\nNameError: name \'counter_data\' is not defined\n'
+p11
+s.
