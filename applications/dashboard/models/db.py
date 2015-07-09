@@ -23,6 +23,11 @@ if not request.env.web2py_runtime_gae:
 
     db = DAL(os.environ['WANTSOMEDASHBOARDS_DATABASE_URL'], pool_size=10)
 
+    # import os
+    # uri = “mysql://%(RDS_USERNAME)s:%(RDS_PASSWORD)s@%(RDS_HOSTNAME)s:%(RDS_PORT)s/%(RDS_DB_NAME)s” % os.environ
+    # db = DAL(uri, pool_size=10)
+    # session.connect(request, response db=db) # sessions in DB!
+
 
 else:
     ## connect to Google BigTable (optional 'google:datastore://namespace')
