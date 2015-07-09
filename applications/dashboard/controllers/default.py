@@ -57,6 +57,11 @@ def call():
     return service()
 
 
+
+
+
+
+
 def upload_logfile():
 
     from datetime import datetime
@@ -78,45 +83,28 @@ def upload_logfile():
         current_count+=1
         counter_data.update_record(counter=current_count)
 
+    ## This means that its sending acuisuite info - not device info
+    if request.vars['MODE']=='STATUS':
 
-    db.debug_tbl.insert(error_message="BEGIN")
-    db.commit()
+        db.debug_tbl.insert(error_message="Recieving Acquisuite Config Info")
+        db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args)
+        db.commit()
 
-    field_storage_object=request.vars['LOGFILE']
-    db.debug_tbl.insert(error_message="Was able to access storage object")
-    db.commit()
+    ## For right now, this means we are getting data from a device, in the future I will check for the LOGFILE url variable
+    else:
 
+        db.debug_tbl.insert(error_message="Recieving Device Info!")
 
-    filename_attr=field_storage_object.name
-    db.debug_tbl.insert(error_message="Was able to access filename attribute", other_info=filename_attr)
-    db.commit()
+        field_storage_object=request.vars['LOGFILE']
+        filename_attr=field_storage_object.name
 
-    value_attr=field_storage_object.value
-    db.debug_tbl.insert(error_message="Was able to access value attribute", other_info=value_attr)
-    db.commit()
+        ## If for some reason there isn't actuall a LOGFILE url variable
+        if field_storage_object==None:
+            status="FAILURE"
+            return dict(current_count=current_count, status=status)
 
-    type_attr=field_storage_object.type
-    db.debug_tbl.insert(error_message="Was able to access type attribute", other_info=type_attr)
-    db.commit()
+        db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
 
-    type_options_attr=field_storage_object.type_options
-    db.debug_tbl.insert(error_message="Was able to access type options attribute", other_info=type_options_attr)
-    db.commit()
+        db.commit()
 
-    disposition_attr=field_storage_object.disposition
-    db.debug_tbl.insert(error_message="Was able to access disposition attribute", other_info=disposition_attr)
-    db.commit()
-
-    disposition_options_attr=field_storage_object.disposition_options
-    db.debug_tbl.insert(error_message="Was able to access disposition options attribute", other_info=disposition_options_attr)
-    db.commit()
-
-    headers_attr=field_storage_object.headers
-    db.debug_tbl.insert(error_message="Was able to access header attribute", other_info=header_attr)
-    db.commit()
-
-
-    dummy = db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
-    db.commit()
-
-    return dict(current_count=current_count)
+    return dict(current_count=current_count, status="SUCCESS")
