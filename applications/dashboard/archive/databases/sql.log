@@ -1,0 +1,167 @@
+timestamp: 2015-07-05T14:21:44.049027
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2015-07-05T14:21:44.228017
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-07-05T14:21:44.353942
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2015-07-05T14:21:44.480199
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2015-07-05T14:21:44.589483
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-07-05T14:21:44.717028
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2015-07-05T15:09:48.529402
+CREATE TABLE page_vists(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    counter INTEGER,
+    last_visited TIMESTAMP,
+    args CHAR(512),
+    vars CHAR(512)
+);
+success!
+timestamp: 2015-07-05T15:13:01.725593
+CREATE TABLE page_vist_count(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page_name CHAR(512),
+    counter INTEGER
+);
+success!
+timestamp: 2015-07-05T15:13:01.908766
+CREATE TABLE page_vist_data(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    last_visited TIMESTAMP,
+    args CHAR(512),
+    vars CHAR(512)
+);
+success!
+timestamp: 2015-07-05T15:42:29.050853
+CREATE TABLE page_visit_count(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page_name CHAR(512),
+    counter INTEGER
+);
+success!
+timestamp: 2015-07-05T15:42:29.242481
+CREATE TABLE page_visit_data(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    last_visited TIMESTAMP,
+    args CHAR(512),
+    vars CHAR(512)
+);
+success!
+timestamp: 2015-07-05T16:35:12.625889
+CREATE TABLE auth_user(
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(512),
+    password VARCHAR(512),
+    registration_key VARCHAR(512),
+    reset_password_key VARCHAR(512),
+    registration_id VARCHAR(512)
+);
+success!
+timestamp: 2015-07-05T16:35:13.063597
+CREATE TABLE auth_group(
+    id SERIAL PRIMARY KEY,
+    role VARCHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-07-05T16:35:13.546385
+CREATE TABLE auth_membership(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2015-07-05T16:35:13.688911
+CREATE TABLE auth_permission(
+    id SERIAL PRIMARY KEY,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(512),
+    table_name VARCHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2015-07-05T16:35:13.984991
+CREATE TABLE auth_event(
+    id SERIAL PRIMARY KEY,
+    time_stamp TIMESTAMP,
+    client_ip VARCHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-07-05T16:35:14.105565
+CREATE TABLE auth_cas(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service VARCHAR(512),
+    ticket VARCHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2015-07-05T16:35:14.250470
+CREATE TABLE page_visit_count(
+    id SERIAL PRIMARY KEY,
+    page_name VARCHAR(512),
+    counter INTEGER
+);
+success!
+timestamp: 2015-07-05T16:35:14.384666
+CREATE TABLE page_visit_data(
+    id SERIAL PRIMARY KEY,
+    last_visited TIMESTAMP,
+    args VARCHAR(512),
+    vars VARCHAR(512)
+);
+success!
+timestamp: 2015-07-05T17:28:16.148279
+ALTER TABLE page_visit_data ADD page_name VARCHAR(512);
+success!

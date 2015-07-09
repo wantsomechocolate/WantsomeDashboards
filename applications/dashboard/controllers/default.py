@@ -57,12 +57,11 @@ def call():
     return service()
 
 
-def parse_acquisuite():
+def upload_logfile():
 
     from datetime import datetime
 
     page_name=request.function
-
     page_vars=request.vars
     page_args=request.args
 
@@ -71,19 +70,53 @@ def parse_acquisuite():
     if counter_data==None:
 
         dummy = db.page_visit_count.insert(page_name=page_name, counter=1)
-
         current_count=1
 
     else:
 
         current_count=counter_data.counter
-
         current_count+=1
-
         counter_data.update_record(counter=current_count)
 
 
-    dummy = db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args)
+    db.debug_tbl.insert(error_message="BEGIN")
+    db.commit()
 
+    field_storage_object=request.vars['LOGFILE']
+    db.debug_tbl.insert(error_message="Was able to access storage object")
+    db.commit()
+
+
+    filename_attr=field_storage_object.name
+    db.debug_tbl.insert(error_message="Was able to access filename attribute", other_info=filename_attr)
+    db.commit()
+
+    value_attr=field_storage_object.value
+    db.debug_tbl.insert(error_message="Was able to access value attribute", other_info=value_attr)
+    db.commit()
+
+    type_attr=field_storage_object.type
+    db.debug_tbl.insert(error_message="Was able to access type attribute", other_info=type_attr)
+    db.commit()
+
+    type_options_attr=field_storage_object.type_options
+    db.debug_tbl.insert(error_message="Was able to access type options attribute", other_info=type_options_attr)
+    db.commit()
+
+    disposition_attr=field_storage_object.disposition
+    db.debug_tbl.insert(error_message="Was able to access disposition attribute", other_info=disposition_attr)
+    db.commit()
+
+    disposition_options_attr=field_storage_object.disposition_options
+    db.debug_tbl.insert(error_message="Was able to access disposition options attribute", other_info=disposition_options_attr)
+    db.commit()
+
+    headers_attr=field_storage_object.headers
+    db.debug_tbl.insert(error_message="Was able to access header attribute", other_info=header_attr)
+    db.commit()
+
+
+    dummy = db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
+    db.commit()
 
     return dict(current_count=current_count)

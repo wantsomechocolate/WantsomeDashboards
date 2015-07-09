@@ -1,4 +1,4 @@
-timestamp: 2015-07-05T14:21:44.049027
+timestamp: 2015-07-07T13:39:24.455131
 CREATE TABLE auth_user(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name CHAR(128),
@@ -10,21 +10,21 @@ CREATE TABLE auth_user(
     registration_id CHAR(512)
 );
 success!
-timestamp: 2015-07-05T14:21:44.228017
+timestamp: 2015-07-07T13:39:24.606415
 CREATE TABLE auth_group(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     role CHAR(512),
     description TEXT
 );
 success!
-timestamp: 2015-07-05T14:21:44.353942
+timestamp: 2015-07-07T13:39:24.706870
 CREATE TABLE auth_membership(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
 );
 success!
-timestamp: 2015-07-05T14:21:44.480199
+timestamp: 2015-07-07T13:39:24.824773
 CREATE TABLE auth_permission(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
@@ -33,7 +33,7 @@ CREATE TABLE auth_permission(
     record_id INTEGER
 );
 success!
-timestamp: 2015-07-05T14:21:44.589483
+timestamp: 2015-07-07T13:39:24.942091
 CREATE TABLE auth_event(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     time_stamp TIMESTAMP,
@@ -43,7 +43,7 @@ CREATE TABLE auth_event(
     description TEXT
 );
 success!
-timestamp: 2015-07-05T14:21:44.717028
+timestamp: 2015-07-07T13:39:25.059919
 CREATE TABLE auth_cas(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
@@ -53,115 +53,150 @@ CREATE TABLE auth_cas(
     renew CHAR(1)
 );
 success!
-timestamp: 2015-07-05T15:09:48.529402
-CREATE TABLE page_vists(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    counter INTEGER,
-    last_visited TIMESTAMP,
-    args CHAR(512),
-    vars CHAR(512)
-);
-success!
-timestamp: 2015-07-05T15:13:01.725593
-CREATE TABLE page_vist_count(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    page_name CHAR(512),
-    counter INTEGER
-);
-success!
-timestamp: 2015-07-05T15:13:01.908766
-CREATE TABLE page_vist_data(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    last_visited TIMESTAMP,
-    args CHAR(512),
-    vars CHAR(512)
-);
-success!
-timestamp: 2015-07-05T15:42:29.050853
+timestamp: 2015-07-07T21:01:55.576941
 CREATE TABLE page_visit_count(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     page_name CHAR(512),
     counter INTEGER
 );
 success!
-timestamp: 2015-07-05T15:42:29.242481
+timestamp: 2015-07-07T21:01:55.712079
 CREATE TABLE page_visit_data(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page_name CHAR(512),
     last_visited TIMESTAMP,
     args CHAR(512),
     vars CHAR(512)
 );
 success!
-timestamp: 2015-07-05T16:35:12.625889
+timestamp: 2015-07-08T08:47:05.652192
+CREATE TABLE web2py_session_wantsomebeanstalk2(
+    id INT AUTO_INCREMENT NOT NULL,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime DATETIME,
+    modified_datetime DATETIME,
+    unique_key VARCHAR(64),
+    session_data LONGBLOB,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2015-07-08T08:47:06.435061
 CREATE TABLE auth_user(
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT NOT NULL,
     first_name VARCHAR(128),
     last_name VARCHAR(128),
     email VARCHAR(512),
     password VARCHAR(512),
     registration_key VARCHAR(512),
     reset_password_key VARCHAR(512),
-    registration_id VARCHAR(512)
-);
+    registration_id VARCHAR(512),
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T16:35:13.063597
+timestamp: 2015-07-08T08:47:06.692525
 CREATE TABLE auth_group(
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT NOT NULL,
     role VARCHAR(512),
-    description TEXT
-);
+    description LONGTEXT,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T16:35:13.546385
+timestamp: 2015-07-08T08:47:07.320902
 CREATE TABLE auth_membership(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
-);
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T16:35:13.688911
+timestamp: 2015-07-08T08:47:07.689532
 CREATE TABLE auth_permission(
-    id SERIAL PRIMARY KEY,
-    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    id INT AUTO_INCREMENT NOT NULL,
+    group_id INT, INDEX group_id__idx (group_id), FOREIGN KEY (group_id) REFERENCES auth_group (id) ON DELETE CASCADE,
     name VARCHAR(512),
     table_name VARCHAR(512),
-    record_id INTEGER
-);
+    record_id INT,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T16:35:13.984991
+timestamp: 2015-07-08T08:47:07.971727
 CREATE TABLE auth_event(
-    id SERIAL PRIMARY KEY,
-    time_stamp TIMESTAMP,
+    id INT AUTO_INCREMENT NOT NULL,
+    time_stamp DATETIME,
     client_ip VARCHAR(512),
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
     origin VARCHAR(512),
-    description TEXT
-);
+    description LONGTEXT,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T16:35:14.105565
+timestamp: 2015-07-08T08:47:08.417265
 CREATE TABLE auth_cas(
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
-    created_on TIMESTAMP,
+    id INT AUTO_INCREMENT NOT NULL,
+    user_id INT, INDEX user_id__idx (user_id), FOREIGN KEY (user_id) REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on DATETIME,
     service VARCHAR(512),
     ticket VARCHAR(512),
-    renew CHAR(1)
-);
+    renew CHAR(1),
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T16:35:14.250470
+timestamp: 2015-07-08T08:47:08.769887
 CREATE TABLE page_visit_count(
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT NOT NULL,
     page_name VARCHAR(512),
-    counter INTEGER
-);
+    counter INT,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T16:35:14.384666
+timestamp: 2015-07-08T08:47:09.042772
 CREATE TABLE page_visit_data(
-    id SERIAL PRIMARY KEY,
-    last_visited TIMESTAMP,
+    id INT AUTO_INCREMENT NOT NULL,
+    page_name VARCHAR(512),
+    last_visited DATETIME,
     args VARCHAR(512),
-    vars VARCHAR(512)
-);
+    vars VARCHAR(512),
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
 success!
-timestamp: 2015-07-05T17:28:16.148279
-ALTER TABLE page_visit_data ADD page_name VARCHAR(512);
+timestamp: 2015-07-08T15:59:03.129895
+ALTER TABLE page_visit_data ADD filename VARCHAR(512);
+success!
+success!
+timestamp: 2015-07-08T21:38:11.838278
+ALTER TABLE page_visit_data ADD logfile VARCHAR(512);
+success!
+success!
+timestamp: 2015-07-08T22:42:36.995930
+CREATE TABLE debug(
+    id INT AUTO_INCREMENT NOT NULL,
+    message VARCHAR(512),
+    other VARCHAR(512),
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2015-07-09T08:18:49.130888
+CREATE TABLE web2py_session_dashboard(
+    id INT AUTO_INCREMENT NOT NULL,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime DATETIME,
+    modified_datetime DATETIME,
+    unique_key VARCHAR(64),
+    session_data LONGBLOB,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!
+timestamp: 2015-07-09T08:22:16.759523
+ALTER TABLE page_visit_data ADD filename CHAR(512);
+timestamp: 2015-07-09T08:22:16.870220
+ALTER TABLE page_visit_data ADD log_file CHAR(512);
+success!
+timestamp: 2015-07-09T08:22:54.844769
+CREATE TABLE debug_tbl(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    error_message CHAR(512),
+    other_info CHAR(512)
+);
 success!
