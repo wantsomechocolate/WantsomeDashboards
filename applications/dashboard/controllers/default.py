@@ -96,14 +96,16 @@ def upload_logfile():
         db.debug_tbl.insert(error_message="Recieving Device Info!")
 
         field_storage_object=request.vars['LOGFILE']
-        filename_attr=field_storage_object.name
+        
 
         ## If for some reason there isn't actuall a LOGFILE url variable
         if field_storage_object==None:
             status="FAILURE"
             return dict(current_count=current_count, status=status)
 
-        db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
+        else:
+            filename_attr=field_storage_object.name
+            db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
 
         db.commit()
 
