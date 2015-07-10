@@ -200,3 +200,51 @@ CREATE TABLE debug_tbl(
     other_info CHAR(512)
 );
 success!
+timestamp: 2015-07-10T10:07:54.810341
+CREATE TABLE auth_user(
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(512),
+    password VARCHAR(512),
+    registration_key VARCHAR(512),
+    reset_password_key VARCHAR(512),
+    registration_id VARCHAR(512)
+);
+timestamp: 2015-07-10T10:13:13.360105
+CREATE TABLE auth_user(
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(512),
+    password VARCHAR(512),
+    registration_key VARCHAR(512),
+    reset_password_key VARCHAR(512),
+    registration_id VARCHAR(512)
+);
+timestamp: 2015-07-10T11:08:05.065823
+ALTER TABLE page_visit_data ADD filename VARCHAR(512);
+timestamp: 2015-07-10T11:08:05.161168
+ALTER TABLE page_visit_data ADD log_file VARCHAR(512);
+success!
+timestamp: 2015-07-10T11:08:05.217923
+CREATE TABLE debug_tbl(
+    id SERIAL PRIMARY KEY,
+    error_message VARCHAR(512),
+    other_info VARCHAR(512)
+);
+success!
+timestamp: 2015-07-10T11:34:09.268497
+ALTER TABLE page_visit_data ADD log_file VARCHAR(512);
+success!
+timestamp: 2015-07-10T11:34:09.665471
+ALTER TABLE page_visit_data DROP COLUMN logfile;
+success!
+timestamp: 2015-07-10T11:34:09.872778
+CREATE TABLE debug_tbl(
+    id INT AUTO_INCREMENT NOT NULL,
+    error_message VARCHAR(512),
+    other_info VARCHAR(512),
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8;
+success!

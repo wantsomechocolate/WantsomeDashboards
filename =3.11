@@ -1,0 +1,6 @@
+Downloading/unpacking pyyaml
+  Cannot fetch index base URL https://pypi.python.org/simple/
+  Could not find any downloads that satisfy the requirement pyyaml
+Cleaning up...
+No distributions at all found for pyyaml
+Storing debug log for failure in /home/wantsomechocolate/.pip/pip.log

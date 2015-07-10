@@ -1,0 +1,10 @@
+branch-defaults:
+  master:
+    environment: wantsomebeanstalk2
+global:
+  application_name: WantsomeBeanstalk2
+  default_ec2_keyname: aws-eb
+  default_platform: 64bit Amazon Linux 2015.03 v1.4.3 running Python 2.7
+  default_region: null
+  profile: ReadWriteBeanStalk
+  sc: git
