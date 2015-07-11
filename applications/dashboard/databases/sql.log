@@ -248,3 +248,156 @@ CREATE TABLE debug_tbl(
     PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 success!
+timestamp: 2015-07-10T12:21:26.068086
+CREATE TABLE web2py_session_dashboard(
+    id SERIAL PRIMARY KEY,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key VARCHAR(64),
+    session_data BYTEA
+);
+timestamp: 2015-07-11T10:23:53.088456
+CREATE TABLE web2py_session_dashboard(
+    id SERIAL PRIMARY KEY,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key VARCHAR(64),
+    session_data BYTEA
+);
+timestamp: 2015-07-11T10:29:25.067511
+CREATE TABLE web2py_session_dashboard(
+    id SERIAL PRIMARY KEY,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key VARCHAR(64),
+    session_data BYTEA
+);
+timestamp: 2015-07-11T11:14:52.319374
+CREATE TABLE web2py_session_dashboard(
+    id SERIAL PRIMARY KEY,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key VARCHAR(64),
+    session_data BYTEA
+);
+timestamp: 2015-07-11T11:15:37.972788
+CREATE TABLE web2py_session_dashboard(
+    id SERIAL PRIMARY KEY,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key VARCHAR(64),
+    session_data BYTEA
+);
+success!
+timestamp: 2015-07-11T11:20:14.963510
+CREATE TABLE web2py_session_dashboard(
+    id SERIAL PRIMARY KEY,
+    locked CHAR(1),
+    client_ip VARCHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key VARCHAR(64),
+    session_data BYTEA
+);
+success!
+timestamp: 2015-07-11T11:20:15.129206
+CREATE TABLE auth_user(
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(128),
+    last_name VARCHAR(128),
+    email VARCHAR(512),
+    password VARCHAR(512),
+    registration_key VARCHAR(512),
+    reset_password_key VARCHAR(512),
+    registration_id VARCHAR(512)
+);
+success!
+timestamp: 2015-07-11T11:20:15.202398
+CREATE TABLE auth_group(
+    id SERIAL PRIMARY KEY,
+    role VARCHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-07-11T11:20:15.306922
+CREATE TABLE auth_membership(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE
+);
+success!
+timestamp: 2015-07-11T11:20:15.414628
+CREATE TABLE auth_permission(
+    id SERIAL PRIMARY KEY,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE,
+    name VARCHAR(512),
+    table_name VARCHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2015-07-11T11:20:15.536907
+CREATE TABLE auth_event(
+    id SERIAL PRIMARY KEY,
+    time_stamp TIMESTAMP,
+    client_ip VARCHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    origin VARCHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-07-11T11:20:15.660223
+CREATE TABLE auth_cas(
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE,
+    created_on TIMESTAMP,
+    service VARCHAR(512),
+    ticket VARCHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2015-07-11T11:20:15.773544
+CREATE TABLE page_visit_count(
+    id SERIAL PRIMARY KEY,
+    page_name VARCHAR(512),
+    counter INTEGER
+);
+success!
+timestamp: 2015-07-11T11:20:15.865758
+CREATE TABLE page_visit_data(
+    id SERIAL PRIMARY KEY,
+    page_name VARCHAR(512),
+    last_visited TIMESTAMP,
+    args VARCHAR(512),
+    vars VARCHAR(512),
+    filename VARCHAR(512),
+    log_file VARCHAR(512)
+);
+success!
+timestamp: 2015-07-11T11:20:15.976015
+CREATE TABLE debug_tbl(
+    id SERIAL PRIMARY KEY,
+    error_message VARCHAR(512),
+    other_info VARCHAR(512)
+);
+success!
+timestamp: 2015-07-11T11:28:23.376711
+CREATE TABLE web2py_session_dashboard(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    locked CHAR(1),
+    client_ip CHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key CHAR(64),
+    session_data BLOB
+);
+success!

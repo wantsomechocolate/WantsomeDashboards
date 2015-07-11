@@ -15,8 +15,8 @@ applications/*/cache
 # applications/*/databases
 # my api keys have been showing up in the errors file
 applications/*/errors
-applications/*/sessions
-applications/*/uploads
+# applications/*/sessions
+# applications/*/uploads
  
 #General
 *.py[co]
