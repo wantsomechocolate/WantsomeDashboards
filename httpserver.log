@@ -378,3 +378,12 @@
 127.0.0.1, 2015-07-11 13:50:17, POST, /appadmin/update/db/page_visit_data/266, HTTP/1.1, 303, 0.293243
 127.0.0.1, 2015-07-11 13:50:17, GET, /appadmin/select/db, HTTP/1.1, 200, 0.367423
 127.0.0.1, 2015-07-11 13:50:21, GET, /appadmin/download/db/page_visit_data.log_file.8e452666909f88a7.6d622d3030312e35353945333039425f332e6c6f672e677a.gz, HTTP/1.1, 200, 0.303890
+127.0.0.1, 2015-07-11 13:54:05, GET, /appadmin, HTTP/1.1, 200, 0.844285
+127.0.0.1, 2015-07-11 13:54:06, GET, /appadmin/hooks, HTTP/1.1, 200, 0.281236
+127.0.0.1, 2015-07-11 13:54:08, GET, /appadmin/select/db, HTTP/1.1, 200, 0.392546
+127.0.0.1, 2015-07-11 13:54:14, POST, /appadmin/select/db, HTTP/1.1, 200, 0.310178
+127.0.0.1, 2015-07-11 14:04:29, GET, /appadmin/select/db, HTTP/1.1, 200, 0.347786
+127.0.0.1, 2015-07-11 14:04:50, GET, /appadmin/download/db/page_visit_data.log_file.8696456ead48962a.6d622d3030392e35354131353933335f322e6c6f672e677a.gz, HTTP/1.1, 404, 0.218256
+127.0.0.1, 2015-07-11 14:04:53, GET, /appadmin/select/db, HTTP/1.1, 200, 0.399775
+127.0.0.1, 2015-07-11 14:04:56, GET, /appadmin/download/db/page_visit_data.log_file.8501082b94751322.6d622d3031302e35354131354138365f322e6c6f672e677a.gz, HTTP/1.1, 404, 0.167382
+127.0.0.1, 2015-07-11 14:04:59, GET, /appadmin/select/db, HTTP/1.1, 200, 0.430315
