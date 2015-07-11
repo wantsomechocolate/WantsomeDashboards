@@ -110,3 +110,11 @@ def upload_logfile():
         db.commit()
 
     return dict(current_count=current_count, status="SUCCESS")
+
+
+# Authenticate
+# Check MODE
+
+# If imode is LOGFILEUPLOAD
+
+# check md5sum

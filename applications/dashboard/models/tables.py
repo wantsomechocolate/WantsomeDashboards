@@ -17,3 +17,4 @@ db.define_table('debug_tbl',
 	Field('error_message'),
 	Field('other_info'),
 	)
+
