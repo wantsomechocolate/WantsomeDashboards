@@ -401,3 +401,45 @@ CREATE TABLE web2py_session_dashboard(
     session_data BLOB
 );
 success!
+timestamp: 2015-07-11T12:26:25.913484
+ALTER TABLE page_visit_data ADD vars__tmp LONGTEXT;
+success!
+UPDATE page_visit_data SET vars__tmp=vars;
+success!
+ALTER TABLE page_visit_data DROP COLUMN vars;
+success!
+ALTER TABLE page_visit_data ADD vars LONGTEXT;
+success!
+UPDATE page_visit_data SET vars=vars__tmp;
+success!
+ALTER TABLE page_visit_data DROP COLUMN vars__tmp;
+success!
+timestamp: 2015-07-11T12:26:27.861694
+ALTER TABLE page_visit_data ADD args__tmp LONGTEXT;
+success!
+UPDATE page_visit_data SET args__tmp=args;
+success!
+ALTER TABLE page_visit_data DROP COLUMN args;
+success!
+ALTER TABLE page_visit_data ADD args LONGTEXT;
+success!
+UPDATE page_visit_data SET args=args__tmp;
+success!
+ALTER TABLE page_visit_data DROP COLUMN args__tmp;
+success!
+success!
+timestamp: 2015-07-11T12:28:17.272779
+ALTER TABLE page_visit_data ADD vars__tmp TEXT;
+UPDATE page_visit_data SET vars__tmp=vars;
+ALTER TABLE page_visit_data DROP COLUMN vars;
+ALTER TABLE page_visit_data ADD vars TEXT;
+UPDATE page_visit_data SET vars=vars__tmp;
+ALTER TABLE page_visit_data DROP COLUMN vars__tmp;
+timestamp: 2015-07-11T12:28:17.466539
+ALTER TABLE page_visit_data ADD args__tmp TEXT;
+UPDATE page_visit_data SET args__tmp=args;
+ALTER TABLE page_visit_data DROP COLUMN args;
+ALTER TABLE page_visit_data ADD args TEXT;
+UPDATE page_visit_data SET args=args__tmp;
+ALTER TABLE page_visit_data DROP COLUMN args__tmp;
+success!
