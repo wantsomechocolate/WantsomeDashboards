@@ -115,6 +115,16 @@ def upload_logfile():
 # Authenticate
 # Check MODE
 
-# If imode is LOGFILEUPLOAD
+# If mode is LOGFILEUPLOAD
 
-# check md5sum
+# check md5sum is same as sent value
+# Save or update device information
+# Do not use the name supplied by the fieldstorage object, instead supply your own name made up of validated pieces
+# Account for the possibility that the name you come up with may exist already
+
+## Loop through the file going a line at a time (one line will be one timestamp)
+## Make sure line is <0 but less than 512? why less than 512 byts?
+## put the data you want in the locations you want!
+
+
+#Done!
