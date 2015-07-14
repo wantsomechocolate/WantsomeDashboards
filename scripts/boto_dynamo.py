@@ -2,6 +2,16 @@
 import boto.dynamodb2
 from boto.dynamodb2.table import Table
 import os
+from datetime import datetime
+
+## I have to get timezone from the unit and convert to UTC
+## only UTC is allowed to be saved in the database!
+## when displaying the timezone from the aquisuite should be
+## retrieved and applied. 
+
+
+date_iso=datetime.isoformat(datetime.utcnow())
+
 
 ## Create a connection object to supply later where necessary
 conn=boto.dynamodb2.connect_to_region(
@@ -29,17 +39,17 @@ table = Table('timeseriestable',connection=conn)
 with table.batch_write() as batch:
 	for i in range(5):
 		batch.put_item(data={
-			'timeseriesname':'test_name',
+			'timeseriesname':'test_name_2',
 			'timestamp':'test_time_stamp_'+str(i+12),
 			'name':'value'+str(i+12),
 			})
 
 
-query_results = table.query_2(timeseriesname__eq='test_name',timestamp__beginswith='test_time_stamp_')
+#query_results = table.query_2(timeseriesname__eq='test_name',timestamp__beginswith='test_time_stamp_')
 
-query_results = table.query_2(timeseriesname__eq='test_name',timestamp__gte='test_time_stamp_5')
+#query_results = table.query_2(timeseriesname__eq='test_name',timestamp__gte='test_time_stamp_5')
 
-query_results = table.query_2(timeseriesname__eq='test_name',timestamp__between=['test_time_stamp_16','test_time_stamp_5'])
+query_results = table.query_2(timeseriesname__eq='test_name_2',timestamp__between=['test_time_stamp_16','test_time_stamp_5'])
 
 ##gt
 ##lt
