@@ -64,7 +64,17 @@ def call():
 
 def upload_logfile():
 
+## This script will be for parsing acquisuite data only
+## That way I garuntee that the data coming is from an acquisuite
+
+## If we get another unit, We add another script!
+
     from datetime import datetime
+
+    import boto.dynamodb2
+    from boto.dynamodb2.table import Table
+
+    import json
 
     page_name=request.function
     page_vars=request.vars
@@ -83,12 +93,60 @@ def upload_logfile():
         current_count+=1
         counter_data.update_record(counter=current_count)
 
+
+
+
+
+
+
+
+
+
     ## This means that its sending acuisuite info - not device info
     if request.vars['MODE']=='STATUS':
 
+        ## Keeping track of the process
         db.debug_tbl.insert(error_message="Recieving Acquisuite Config Info")
         db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args)
         db.commit()
+
+        ## Try to enter all the 
+        conn=boto.dynamodb2.connect_to_region(
+            'us-east-1',
+            aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
+            aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
+            )
+
+        db.debug_tbl.insert(error_message="Created Conn Object")
+        db.commit()
+
+        table = Table('das_attributes',connection=conn)
+
+
+        db.debug_tbl.insert(error_message="Retrieved the das_attributes table")
+        db.commit() 
+
+        data={
+         'serial_number':request.vars['SERIALNUMBER'],
+         }
+
+        db.debug_tbl.insert(error_message="Started a data dictionary")
+        db.commit()
+
+
+        for key in request.vars:
+            if key!='SERIALNUMBER':
+                data[key]=request.vars[key]
+
+        db.debug_tbl.insert(error_message="Added remaining info to the dict", other_info=data)
+        db.commit()
+
+        table.put_item(data)
+
+        db.debug_tbl.insert(error_message="Added data to the dynamo table!")
+        db.commit()
+
+
 
     ## For right now, this means we are getting data from a device, in the future I will check for the LOGFILE url variable
     else:

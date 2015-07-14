@@ -18,3 +18,36 @@ db.define_table('debug_tbl',
 	Field('other_info'),
 	)
 
+db.define_table('das_config',
+	Field('serial_number'),
+	Field('location'),
+	Field('notes'),
+	)
+
+## This info will be stored in dynamo!
+## The table will have one key, the serial number. 
+# db.define_table('das_attrs',
+# 	Field('serial_number','reference das_config.serial_number'),
+# 	Field)
+
+
+db.define_table('device_config',
+	Field('serial_number'),
+	Field('measuring'),
+	Field('location'),
+	Field('notes'),
+	)
+
+
+## If I store the acquisuite info in dynamo, I don't have to worry about the names of the params,
+## I just use the param name and the attribute freely,
+## If there is another unit, I just use whatever names and data they store
+## That means I only have to keep track of what certain common info names are for each type of unit. 
+## If there is a request to view info, I can get the serial- use that to get the acquisuite info from 
+## dynamo, use that to get the config for the unit and pull the time series data for that unit.
+## I think that is better than marrying the acquisuite names for the fields to the db tables
+## I also think it is better than trying to come up with common field names based only on the acquisuite. 
+
+## I still need a DAS config to use as data validation. But I could still actually use dynamo.....
+## But then letting other people configure units might be tricky. I'll keep that in the postgre db for now
+

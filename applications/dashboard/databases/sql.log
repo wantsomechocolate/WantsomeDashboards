@@ -443,3 +443,23 @@ ALTER TABLE page_visit_data ADD args TEXT;
 UPDATE page_visit_data SET args=args__tmp;
 ALTER TABLE page_visit_data DROP COLUMN args__tmp;
 success!
+timestamp: 2015-07-14T08:51:23.758929
+CREATE TABLE das_config(
+    id SERIAL PRIMARY KEY,
+    serial_number VARCHAR(512),
+    location VARCHAR(512),
+    notes VARCHAR(512)
+);
+success!
+timestamp: 2015-07-14T08:51:26.809394
+CREATE TABLE device_config(
+    id SERIAL PRIMARY KEY,
+    serial_number VARCHAR(512),
+    measuring VARCHAR(512),
+    location VARCHAR(512),
+    notes VARCHAR(512)
+);
+success!
+success!
+timestamp: 2015-07-14T19:30:25.126493
+ALTER TABLE device_config ADD location VARCHAR(512);
