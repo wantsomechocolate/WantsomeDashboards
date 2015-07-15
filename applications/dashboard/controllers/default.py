@@ -74,7 +74,7 @@ def upload_logfile():
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
 
-    import json
+    #import json
 
     page_name=request.function
     page_vars=request.vars
@@ -92,11 +92,6 @@ def upload_logfile():
         current_count=counter_data.counter
         current_count+=1
         counter_data.update_record(counter=current_count)
-
-
-
-
-
 
 
 
@@ -135,13 +130,19 @@ def upload_logfile():
 
 
         for key in request.vars:
+            print key
             if key!='SERIALNUMBER':
                 data[key]=request.vars[key]
 
         db.debug_tbl.insert(error_message="Added remaining info to the dict", other_info=data)
         db.commit()
 
-        table.put_item(data)
+        print data
+
+        # try:
+        table.put_item(data, overwrite=True)
+        # except boto.dynamodb2.exceptions.ConditionalCheckFailedException:
+        #     table.get_item(serial_number=data['serial_number'])
 
         db.debug_tbl.insert(error_message="Added data to the dynamo table!")
         db.commit()
