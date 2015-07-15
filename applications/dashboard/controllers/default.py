@@ -150,11 +150,13 @@ def upload_logfile():
 
 
     ## For right now, this means we are getting data from a device, in the future I will check for the LOGFILE url variable
-    else:
+    elif request.vars['MODE']=='LOGFILEUPLOAD':
 
         db.debug_tbl.insert(error_message="Recieving Device Info!")
 
         field_storage_object=request.vars['LOGFILE']
+
+
         
 
         ## If for some reason there isn't actuall a LOGFILE url variable
@@ -166,7 +168,19 @@ def upload_logfile():
             filename_attr=field_storage_object.name
             db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
 
-        db.commit()
+            ## Try to get data out of the file!
+            file_data=field_storage_object.file
+            file_data_lines=file_data.readlines()
+
+            for line in file_data_lines:
+                line_list=line.trim().split(',')
+                db.debug_tbl.insert(error_message=line_list)
+            
+            db.commit()
+
+
+    else:
+        return dict(current_count=current_count, status='MODE value not supported')
 
     return dict(current_count=current_count, status="SUCCESS")
 
@@ -190,7 +204,7 @@ def upload_logfile():
 
 
 
-def view_das_info():
+def view_aws_info():
 
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
@@ -204,10 +218,15 @@ def view_das_info():
         )
 
     # print conn.list_tables()
+    # print request.args[0]
 
-    table = Table('das_attributes',connection=conn)
+    table = Table(request.args[0],connection=conn)
 
-    all_das=table.scan()
+    all_entries=table.scan()
+
+    return dict(all_entries=all_entries)
 
 
-    return dict(all_das=all_das)
+
+## I need a new table for the device info
+##

@@ -1,0 +1,15 @@
+
+
+    {{ for entry in all_entries: }}
+
+    	<!-- <strong>For Unit:  =entry['serial_number'] </strong> -->
+    	<br>
+
+        {{ for i in entry.keys(): }}
+
+            {{=i}}: {{=entry[i]}}
+            <br>
+
+        {{ pass }}
+        <br>
+    {{ pass }}

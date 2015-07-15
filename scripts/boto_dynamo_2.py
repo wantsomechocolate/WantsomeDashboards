@@ -14,6 +14,6 @@ conn=boto.dynamodb2.connect_to_region(
 print conn.list_tables()
 
 
-table = Table('das_attributes',connection=conn)
+table = Table('device_attributes',connection=conn)
 
 
