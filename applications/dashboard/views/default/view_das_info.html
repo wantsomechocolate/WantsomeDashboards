@@ -1,0 +1,15 @@
+
+
+    {{ for das in all_das: }}
+
+    	<strong>For Unit: {{ =das['serial_number'] }}</strong>
+    	<br>
+
+        {{ for i in das.keys(): }}
+
+            {{=i}}, {{=das[i]}}
+            <br>
+
+        {{ pass }}
+        <br>
+    {{ pass }}
