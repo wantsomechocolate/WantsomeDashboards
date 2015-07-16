@@ -135,7 +135,7 @@ def upload_logfile():
             ## Fetch Table that keeps acquisuite info
             table = Table('device_attributes',connection=conn)
 
-            device_id=request.vars['SERIALNUMBER']+request.vars['MODBUSDEVICE']
+            device_id=request.vars['SERIALNUMBER']+'_'+request.vars['MODBUSDEVICE']
 
             data=dict(device_id=device_id)
 
@@ -149,20 +149,20 @@ def upload_logfile():
             table.put_item(data, overwrite=True)
 
 
-            # filename_attr=field_storage_object.name
-            # db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
+            filename_attr=field_storage_object.name
+            db.page_visit_data.insert(last_visited=datetime.now(), vars=request.vars, filename=filename_attr, log_file=field_storage_object)
 
 
-            # ## Try to get data out of the file!
-            # file_data=field_storage_object.file
-            # file_data_lines=file_data.readlines()
+            ## Try to get data out of the file!
+            file_data=field_storage_object.file
+            file_data_lines=file_data.readlines()
 
 
-            # for line in file_data_lines:
-            #     line_list=line.trim().split(',')
-            #     db.debug_tbl.insert(error_message=line_list)
+            for line in file_data_lines:
+                line_list=line.trim().split(',')
+                db.debug_tbl.insert(error_message=line_list)
             
-            # db.commit()
+            db.commit()
 
 
     else:
@@ -216,3 +216,7 @@ def view_aws_info():
 
 ## I need a new table for the device info
 ##
+
+
+def iframe_test():
+    return dict()
