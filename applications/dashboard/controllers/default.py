@@ -71,32 +71,14 @@ def upload_logfile():
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
 
-    # page_name=request.function
-    # page_vars=request.vars
-    # page_args=request.args
+    page_name=request.function
+    page_vars=request.vars
+    page_args=request.args
 
-    # counter_data=db(db.page_visit_count.page_name==page_name).select().first()
-
-    # if counter_data==None:
-
-    #     dummy = db.page_visit_count.insert(page_name=page_name, counter=1)
-    #     current_count=1
-
-    # else:
-
-    #     current_count=counter_data.counter
-    #     current_count+=1
-    #     counter_data.update_record(counter=current_count)
 
 
     ## This means that its sending acquisuite info - not device info
     if request.vars['MODE']=='STATUS':
-
-
-        ## Keeping track of the process
-        db.debug_tbl.insert(error_message="Recieving Acquisuite Config Info")
-        db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args)
-        db.commit()
 
 
         ## Connect to Dynamo
@@ -107,16 +89,8 @@ def upload_logfile():
             )
 
 
-        db.debug_tbl.insert(error_message="Created Conn Object")
-        db.commit()
-
-
         ## Fetch Table that keeps acquisuite info
         table = Table('das_attributes',connection=conn)
-
-
-        db.debug_tbl.insert(error_message="Retrieved the das_attributes table")
-        db.commit() 
 
 
         ## Must assign value to hash key, in this case it is serial number
@@ -124,9 +98,6 @@ def upload_logfile():
          'serial_number':request.vars['SERIALNUMBER'],
          }
 
-
-        db.debug_tbl.insert(error_message="Started a data dictionary")
-        db.commit()
 
 
         ## Add the remainder of the data into the table
@@ -137,27 +108,18 @@ def upload_logfile():
                 data[key]=request.vars[key]
 
 
-        db.debug_tbl.insert(error_message="Added remaining info to the dict", other_info=data)
-        db.commit()
-
-
-        print data
-
-
         # try:
         table.put_item(data, overwrite=True)
         # except boto.dynamodb2.exceptions.ConditionalCheckFailedException:
         #     table.get_item(serial_number=data['serial_number'])
 
-        db.debug_tbl.insert(error_message="Added data to the dynamo table!")
-        db.commit()
+        # db.debug_tbl.insert(error_message="Added data to the dynamo table!")
+        # db.commit()
 
 
 
     ## For right now, this means we are getting data from a device, in the future I will check for the LOGFILE url variable
     elif request.vars['MODE']=='LOGFILEUPLOAD':
-
-        db.debug_tbl.insert(error_message="Recieving Device Info!")
 
         field_storage_object=request.vars['LOGFILE']
 
@@ -171,7 +133,6 @@ def upload_logfile():
 
             ## Save the device information
             ## The device id is going to be the serial_number of parent unit and the modbus address of that unit
-
             conn=boto.dynamodb2.connect_to_region(
                 'us-east-1',
                 aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
@@ -185,9 +146,6 @@ def upload_logfile():
 
             data=dict(device_id=device_id)
 
-
-
-
             ## Add the remainder of the data into the table
             ## After the hash key it doesn't matter what they are called
             for key in request.vars:
@@ -197,20 +155,21 @@ def upload_logfile():
 
             table.put_item(data, overwrite=True)
 
-            filename_attr=field_storage_object.name
-            db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
+
+            # filename_attr=field_storage_object.name
+            # db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
 
 
-            ## Try to get data out of the file!
-            file_data=field_storage_object.file
-            file_data_lines=file_data.readlines()
+            # ## Try to get data out of the file!
+            # file_data=field_storage_object.file
+            # file_data_lines=file_data.readlines()
 
 
-            for line in file_data_lines:
-                line_list=line.trim().split(',')
-                db.debug_tbl.insert(error_message=line_list)
+            # for line in file_data_lines:
+            #     line_list=line.trim().split(',')
+            #     db.debug_tbl.insert(error_message=line_list)
             
-            db.commit()
+            # db.commit()
 
 
     else:
