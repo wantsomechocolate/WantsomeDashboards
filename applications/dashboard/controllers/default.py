@@ -65,79 +65,84 @@ def call():
 def upload_logfile():
 
 ## This script will be for parsing acquisuite data only
-## That way I garuntee that the data coming is from an acquisuite
-
 ## If we get another unit, We add another script!
 
     from datetime import datetime
-
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
 
-    #import json
+    # page_name=request.function
+    # page_vars=request.vars
+    # page_args=request.args
 
-    page_name=request.function
-    page_vars=request.vars
-    page_args=request.args
+    # counter_data=db(db.page_visit_count.page_name==page_name).select().first()
 
-    counter_data=db(db.page_visit_count.page_name==page_name).select().first()
+    # if counter_data==None:
 
-    if counter_data==None:
+    #     dummy = db.page_visit_count.insert(page_name=page_name, counter=1)
+    #     current_count=1
 
-        dummy = db.page_visit_count.insert(page_name=page_name, counter=1)
-        current_count=1
+    # else:
 
-    else:
-
-        current_count=counter_data.counter
-        current_count+=1
-        counter_data.update_record(counter=current_count)
+    #     current_count=counter_data.counter
+    #     current_count+=1
+    #     counter_data.update_record(counter=current_count)
 
 
-
-
-
-    ## This means that its sending acuisuite info - not device info
+    ## This means that its sending acquisuite info - not device info
     if request.vars['MODE']=='STATUS':
+
 
         ## Keeping track of the process
         db.debug_tbl.insert(error_message="Recieving Acquisuite Config Info")
         db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args)
         db.commit()
 
-        ## Try to enter all the 
+
+        ## Connect to Dynamo
         conn=boto.dynamodb2.connect_to_region(
             'us-east-1',
             aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
             aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
             )
 
+
         db.debug_tbl.insert(error_message="Created Conn Object")
         db.commit()
 
+
+        ## Fetch Table that keeps acquisuite info
         table = Table('das_attributes',connection=conn)
 
 
         db.debug_tbl.insert(error_message="Retrieved the das_attributes table")
         db.commit() 
 
+
+        ## Must assign value to hash key, in this case it is serial number
         data={
          'serial_number':request.vars['SERIALNUMBER'],
          }
+
 
         db.debug_tbl.insert(error_message="Started a data dictionary")
         db.commit()
 
 
+        ## Add the remainder of the data into the table
+        ## After the hash key it doesn't matter what they are called
         for key in request.vars:
             print key
             if key!='SERIALNUMBER':
                 data[key]=request.vars[key]
 
+
         db.debug_tbl.insert(error_message="Added remaining info to the dict", other_info=data)
         db.commit()
 
+
         print data
+
 
         # try:
         table.put_item(data, overwrite=True)
@@ -157,20 +162,49 @@ def upload_logfile():
         field_storage_object=request.vars['LOGFILE']
 
 
-        
-
         ## If for some reason there isn't actuall a LOGFILE url variable
         if field_storage_object==None:
             status="FAILURE"
             return dict(current_count=current_count, status=status)
 
         else:
+
+            ## Save the device information
+            ## The device id is going to be the serial_number of parent unit and the modbus address of that unit
+
+            conn=boto.dynamodb2.connect_to_region(
+                'us-east-1',
+                aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
+                aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
+                )
+
+            ## Fetch Table that keeps acquisuite info
+            table = Table('device_attributes',connection=conn)
+
+            device_id=request.vars['SERIALNUMBER']+request.vars['MODBUSDEVICE']
+
+            data=dict(device_id=device_id)
+
+
+
+
+            ## Add the remainder of the data into the table
+            ## After the hash key it doesn't matter what they are called
+            for key in request.vars:
+                print key
+                if key!='LOGFILE':
+                    data[key]=request.vars[key]
+
+            table.put_item(data, overwrite=True)
+
             filename_attr=field_storage_object.name
             db.page_visit_data.insert(page_name=page_name,last_visited=datetime.now(), vars=page_vars, args=page_args, filename=filename_attr, log_file=field_storage_object)
+
 
             ## Try to get data out of the file!
             file_data=field_storage_object.file
             file_data_lines=file_data.readlines()
+
 
             for line in file_data_lines:
                 line_list=line.trim().split(',')
