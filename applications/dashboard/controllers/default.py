@@ -71,11 +71,6 @@ def upload_logfile():
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
 
-    page_name=request.function
-    page_vars=request.vars
-    page_args=request.args
-
-
 
     ## This means that its sending acquisuite info - not device info
     if request.vars['MODE']=='STATUS':
@@ -109,25 +104,23 @@ def upload_logfile():
 
 
         # try:
+
         table.put_item(data, overwrite=True)
+
         # except boto.dynamodb2.exceptions.ConditionalCheckFailedException:
         #     table.get_item(serial_number=data['serial_number'])
 
-        # db.debug_tbl.insert(error_message="Added data to the dynamo table!")
-        # db.commit()
 
 
 
     ## For right now, this means we are getting data from a device, in the future I will check for the LOGFILE url variable
     elif request.vars['MODE']=='LOGFILEUPLOAD':
-
         field_storage_object=request.vars['LOGFILE']
 
 
         ## If for some reason there isn't actuall a LOGFILE url variable
         if field_storage_object==None:
-            status="FAILURE"
-            return dict(current_count=current_count, status=status)
+            return dict(status="FAILURE")
 
         else:
 
@@ -149,7 +142,7 @@ def upload_logfile():
             ## Add the remainder of the data into the table
             ## After the hash key it doesn't matter what they are called
             for key in request.vars:
-                print key
+                # print key
                 if key!='LOGFILE':
                     data[key]=request.vars[key]
 
@@ -173,9 +166,9 @@ def upload_logfile():
 
 
     else:
-        return dict(current_count=current_count, status='MODE value not supported')
+        return dict(status='MODE value not supported')
 
-    return dict(current_count=current_count, status="SUCCESS")
+    return dict(status="SUCCESS")
 
 
 # Authenticate
