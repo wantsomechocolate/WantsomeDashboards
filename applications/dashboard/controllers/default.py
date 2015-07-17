@@ -191,15 +191,19 @@ def upload_logfile():
             file_data_as_string=file_handle.read()
 
 
+            ## If you don't do this, then you will have an empty line at the end of your file and get all the index errors
+            file_data_lines=file_data_lines.strip()
+
+
             ## The file string comes in with newlines intact, split on the newlines to effectively get rows
             file_data_lines=file_data_as_string.split('\n')
 
-            db.debug_tbl.insert(error_message=str(file_data_lines))
-            db.commit()
-            db.debug_tbl.insert(error_message=str(file_data_lines[0]))
-            db.commit()
-            db.debug_tbl.insert(error_message=str(file_data_lines[0].split(',')))
-            db.commit()
+            # db.debug_tbl.insert(error_message=str(file_data_lines))
+            # db.commit()
+            # db.debug_tbl.insert(error_message=str(file_data_lines[0]))
+            # db.commit()
+            # db.debug_tbl.insert(error_message=str(file_data_lines[0].split(',')))
+            # db.commit()
 
 
 
@@ -218,16 +222,23 @@ def upload_logfile():
                 for row in file_data_lines:
 
                     ## Get rid of whitespace at the beginning and end of the row
-                    row=row.strip()
+                    # row=row.strip()
 
                     ## Seperate the 'row' into what would be cells if opened in csv or excel format
                     cells=row.split(',')
+                    db.debug_tbl.insert(error_message=str(cells))
+                    db.commit()
 
                     ## for testing purposes get the ts
                     timestamp=cells[0]
+                    db.debug_tbl.insert(error_message=str(timestamp))
+                    db.commit()
 
                     ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
                     cumulative_reading=cells[4]
+                    db.debug_tbl.insert(error_message=str(cumulative_reading))
+                    db.commit()
+
 
                     ## populate the context manager with our requests
                     ## when the with clause is natrually exited, the batch write request will occur. 
