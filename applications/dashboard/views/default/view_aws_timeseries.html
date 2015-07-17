@@ -1,10 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="{{=URL('static','css/wsd.css')}}"/>
+</head>
+<body>
 
-{{ for entry in timeseriesdata: }}
+<h3>
+For Device: {{ =request.args[0] }}
+</h3>
 
-	{{ entry['timeseriesname']}}
-	{{ entry['timestamp'] }}
-	{{ entry['cumulative_electric_usage_kwh']}}
+<table>
+	<tr>
+		<th>
+			Device ID
+		</th>
+		<th>
+			Datetimestamp
+		</th>
+		<th>
+			Cumulative kWh
+		</th>
+	</tr>
+	{{ for row in timeserieslist: }}
+		<tr>
+		{{ for cell in row: }}
+			<td>
+			{{ =cell }}
+			</td>
+		{{ pass }}
+		</tr>
+	{{ pass }}
+</table>
 
-	<br>
 
-{{ pass }}
+</body>
+</html>

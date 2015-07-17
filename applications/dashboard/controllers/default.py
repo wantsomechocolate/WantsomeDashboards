@@ -291,10 +291,6 @@ def view_aws_info():
 
 
 
-## I need a new table for the device info
-##
-
-
 def view_aws_timeseries():
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
@@ -312,10 +308,19 @@ def view_aws_timeseries():
     timeseriesname=request.args[0]
 
     timeseriesdata=tst.query_2(
-        timeseriesname__eq=timeseriesname
+        timeseriesname__eq=timeseriesname,
+        consistent=True,
         )
 
-    return dict(timeseriesdata=timeseriesdata)
+    timeserieslist=[]
+    for entry in timeseriesdata:
+        timeserieslist.append([entry['timeseriesname'],
+                          entry['timestamp'],
+                          entry['cumulative_electric_usage_kwh']]
+                         )
+
+    return dict(timeserieslist=timeserieslist)
+
 
 
 def iframe_test():

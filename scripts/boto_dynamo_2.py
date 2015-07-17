@@ -14,6 +14,20 @@ conn=boto.dynamodb2.connect_to_region(
 print conn.list_tables()
 
 
-table = Table('device_attributes',connection=conn)
+#table = Table('device_attributes',connection=conn)
+tst = Table('timeseriestable',connection=conn)
 
+timeseriesdata=tst.query_2(
+    timeseriesname__eq='001EC600229C_2',
+    consistent=True,
+    )
 
+##for entry in timeseriesdata:
+##    print entry['timeseriesname'], entry['timestamp'], entry['cumulative_electric_usage_kwh']
+
+data_list=[]
+for entry in timeseriesdata:
+    data_list.append([entry['timeseriesname'],
+                      entry['timestamp'],
+                      entry['cumulative_electric_usage_kwh']]
+                     )

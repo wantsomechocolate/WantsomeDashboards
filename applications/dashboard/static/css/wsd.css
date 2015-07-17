@@ -9,3 +9,11 @@ iframe{
 	height:600px;
 }
 
+table{
+	text-align: center;
+}
+
+td{
+	padding-right: 5px;
+	padding-left: 5px;
+}
