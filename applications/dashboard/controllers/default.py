@@ -192,7 +192,7 @@ def upload_logfile():
 
 
             ## If you don't do this, then you will have an empty line at the end of your file and get all the index errors
-            file_data_lines=file_data_lines.strip()
+            file_data_as_string=file_data_as_string.strip()
 
 
             ## The file string comes in with newlines intact, split on the newlines to effectively get rows
@@ -222,23 +222,16 @@ def upload_logfile():
                 for row in file_data_lines:
 
                     ## Get rid of whitespace at the beginning and end of the row
-                    # row=row.strip()
+                    row=row.strip()
 
                     ## Seperate the 'row' into what would be cells if opened in csv or excel format
                     cells=row.split(',')
-                    db.debug_tbl.insert(error_message=str(cells))
-                    db.commit()
 
                     ## for testing purposes get the ts
                     timestamp=cells[0]
-                    db.debug_tbl.insert(error_message=str(timestamp))
-                    db.commit()
 
                     ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
                     cumulative_reading=cells[4]
-                    db.debug_tbl.insert(error_message=str(cumulative_reading))
-                    db.commit()
-
 
                     ## populate the context manager with our requests
                     ## when the with clause is natrually exited, the batch write request will occur. 
@@ -300,6 +293,29 @@ def view_aws_info():
 
 ## I need a new table for the device info
 ##
+
+
+def view_aws_timeseries():
+    import boto.dynamodb2
+    from boto.dynamodb2.table import Table
+    import os
+    from datetime import datetime
+
+    conn=boto.dynamodb2.connect_to_region(
+        'us-east-1',
+        aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
+        aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
+        )
+
+    tst = Table('timeseriestable',connection=conn)
+
+    timeseriesname=request.args[0]
+
+    timeseriesdata=tst.query_2(
+        timeseriesname__eq=timeseriesname
+        )
+
+    return dict(timeseriesdata=timeseriesdata)
 
 
 def iframe_test():

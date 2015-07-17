@@ -1,0 +1,10 @@
+
+{{ for entry in timeseriesdata: }}
+
+	{{ entry['timeseriesname']}}
+	{{ entry['timestamp'] }}
+	{{ entry['cumulative_electric_usage_kwh']}}
+
+	<br>
+
+{{ pass }}

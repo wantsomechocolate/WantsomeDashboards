@@ -463,3 +463,11 @@ success!
 success!
 timestamp: 2015-07-14T19:30:25.126493
 ALTER TABLE device_config ADD location VARCHAR(512);
+timestamp: 2015-07-16T23:24:23.359855
+ALTER TABLE debug_tbl ADD error_message__tmp TEXT;
+UPDATE debug_tbl SET error_message__tmp=error_message;
+ALTER TABLE debug_tbl DROP COLUMN error_message;
+ALTER TABLE debug_tbl ADD error_message TEXT;
+UPDATE debug_tbl SET error_message=error_message__tmp;
+ALTER TABLE debug_tbl DROP COLUMN error_message__tmp;
+success!
