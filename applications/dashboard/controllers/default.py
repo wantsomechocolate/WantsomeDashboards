@@ -68,10 +68,11 @@ def upload_logfile():
 ## If we get another unit, We add another script!
 
     from datetime import datetime
+    import gzip
+
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
-    import gzip
-    import zlib
+
 
 
     ## This means that its sending acquisuite info - not device info
@@ -86,7 +87,7 @@ def upload_logfile():
             )
 
 
-        ## Fetch Table that keeps acquisuite info
+        ## Fetch Table that keeps acquisuite info, passing the conn object we just made
         table = Table('das_attributes',connection=conn)
 
 
@@ -99,78 +100,135 @@ def upload_logfile():
 
         ## Add the remainder of the data into the table
         ## After the hash key it doesn't matter what they are called
+        ## Because we already used serial number as the hash key 
+        ## We don't need to also have it as an arbitrary name value pair
         for key in request.vars:
-            print key
+            
             if key!='SERIALNUMBER':
                 data[key]=request.vars[key]
 
 
+
+        ## The exception commented out below would only come up with the overwrite=True were removed from the put_item call
         # try:
-
         table.put_item(data, overwrite=True)
-
         # except boto.dynamodb2.exceptions.ConditionalCheckFailedException:
         #     table.get_item(serial_number=data['serial_number'])
 
 
 
 
-    ## For right now, this means we are getting data from a device, in the future I will check for the LOGFILE url variable
+    ## This means we are getting data from a device
     elif request.vars['MODE']=='LOGFILEUPLOAD':
+
+        ## Check that there is a logfile in the request
         field_storage_object=request.vars['LOGFILE']
 
 
-        ## If for some reason there isn't actuall a LOGFILE url variable
+        ## If for some reason there isn't actually a LOGFILE url variable then return failure
         if field_storage_object==None:
             return dict(status="FAILURE")
 
+        ## If there is a log file continue on!
         else:
 
-            ## Save the device information
-            ## The device id is going to be the serial_number of parent unit and the modbus address of that unit
+
+            ## Create the connection object to talk to dynamo
             conn=boto.dynamodb2.connect_to_region(
                 'us-east-1',
                 aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
                 aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
                 )
 
-            ## Fetch Table that keeps acquisuite info
+
+            ## Fetch Table that keeps device info (passing in our connection object). 
+            ## We are going to overwrite the current values for the device
+            ## like uptime, parent DAS, etc. 
             table = Table('device_attributes',connection=conn)
 
+
+            ## Save the device information
+            ## The device id is going to be the serial_number of parent unit and the modbus address of that unit
+            ## Seperated by an underscore. 
             device_id=request.vars['SERIALNUMBER']+'_'+request.vars['MODBUSDEVICE']
 
+
+            ## The hash key is the device id! So let's start off the data dictionary (which will go into 
+            ## a call to the db later) with it. 
             data=dict(device_id=device_id)
+
 
             ## Add the remainder of the data into the table
             ## After the hash key it doesn't matter what they are called
+            ## Carefull not to try and store the LOGFILE in the timeseries nosql db.
+            ## That would be silly 
             for key in request.vars:
-                # print key
                 if key!='LOGFILE':
                     data[key]=request.vars[key]
 
+
+            ## Again, without overwrite this would throw an exception every time (but the first time)
+            ## Will think of a better way to do this at some point. 
             table.put_item(data, overwrite=True)
 
 
-            filename_attr=field_storage_object.name
-            db.page_visit_data.insert(last_visited=datetime.now(), vars=request.vars, filename=filename_attr, log_file=field_storage_object)
+            ## The file is gzipped(even when they send naturally every 15 minutes)
+            ## I can put a check in at some point, but for now its assumed. 
+            ## use the native gzip library to read in the gzip file 
+            ## which came from the url variable, which web2py turned into a python fieldstorage object
+            ## which web2py then put back into the post vars as LOGFILE.
+            ## If the mode of r is not passed in (rb in python3), then it will assumed the 
+            ## default type which is WRITE (I know right) and it will actually complain that 
+            ## you are trying to read from a write-only file :/
+            file_handle=gzip.GzipFile(fileobj=field_storage_object.file, mode='r')
 
 
-            gzipped_fso=gzip.GzipFile(fileobj=field_storage_object.file, mode='r')
-
-            ## Try to get data out of the file!
-            # file_data=field_storage_object.file
-            file_data_lines=gzipped_fso.read()
-
-
-            #for line in file_data_lines:
-                #line_list=line.trim().split(',')
-                #db.debug_tbl.insert(error_message=line_list)
-
-            db.debug_tbl.insert(error_message=file_data_lines)
-
-            db.commit()
+            ## This line reads the entire contents of the file into a string. 
+            ## I hope they files don't get too big!
+            ## I tried using readlines which auto chops up the lines into items of a list
+            ## BUT it gives an error, I guess gzip produces a slightly different type of file handle
+            ## than the standard python 'open' construct. 
+            file_data_as_string=gzipped_fso.read()
 
 
+            ## The file string comes in with newlines intact, split on the newlines to effectively get rows
+            file_data_lines=file_data_as_string.split('\n')
+
+
+            ## Connect to the timeseries table, this table has a hash and a range key
+            ## The hash key is the timeseries name (which I'm setting to the device ID for now)
+            ## and the timestamp (which I'm using the utc string ts straight from the DAS for now)
+            ## It is close to ISO format anyway. 
+            timeseriestable = Table('timeseriestable',connection=conn)
+
+
+            ## This with clause is for batch writing. 
+            with timeseriestable.batch_write() as batch:
+
+
+                for row in file_data_lines:
+
+                    ## Get rid of whitespace at the beginning and end of the row
+                    row.strip()
+
+                    ## Seperate the 'row' into what would be cells if opened in csv or excel format
+                    cells=row.split(',')
+
+                    ## for testing purposes get the ts
+                    timestamp=cells[0]
+
+                    ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
+                    cumulative_reading=cells[4]
+
+                    ## populate the context manager with our requests
+                    ## when the with clause is natrually exited, the batch write request will occur. 
+                    batch.put_item(data=dict(
+                        timeseriesname=device_id,
+                        timestamp=timestamp,
+                        cumulative_electric_usage_kwh=cumulative_reading,
+                        ))
+
+            
     else:
         return dict(status='MODE value not supported')
 
