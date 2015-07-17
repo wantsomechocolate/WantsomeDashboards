@@ -70,6 +70,8 @@ def upload_logfile():
     from datetime import datetime
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
+    import gzip
+    import zlib
 
 
     ## This means that its sending acquisuite info - not device info
@@ -153,15 +155,19 @@ def upload_logfile():
             db.page_visit_data.insert(last_visited=datetime.now(), vars=request.vars, filename=filename_attr, log_file=field_storage_object)
 
 
+            gzipped_fso=gzip.GzipFile(fileobj=field_storage_object.file, mode='r')
+
             ## Try to get data out of the file!
-            file_data=field_storage_object.file
-            file_data_lines=file_data.readlines()
+            # file_data=field_storage_object.file
+            file_data_lines=gzipped_fso.read()
 
 
-            for line in file_data_lines:
-                line_list=line.trim().split(',')
-                db.debug_tbl.insert(error_message=line_list)
-            
+            #for line in file_data_lines:
+                #line_list=line.trim().split(',')
+                #db.debug_tbl.insert(error_message=line_list)
+
+            db.debug_tbl.insert(error_message=file_data_lines)
+
             db.commit()
 
 
