@@ -14,7 +14,7 @@ db.define_table('page_visit_data',
 	)
 
 db.define_table('debug_tbl',
-	Field('error_message'),
+	Field('error_message','text'),
 	Field('other_info'),
 	)
 
