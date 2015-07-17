@@ -188,11 +188,20 @@ def upload_logfile():
             ## I tried using readlines which auto chops up the lines into items of a list
             ## BUT it gives an error, I guess gzip produces a slightly different type of file handle
             ## than the standard python 'open' construct. 
-            file_data_as_string=gzipped_fso.read()
+            file_data_as_string=file_handle.read()
 
 
             ## The file string comes in with newlines intact, split on the newlines to effectively get rows
             file_data_lines=file_data_as_string.split('\n')
+
+            db.debug_tbl.insert(error_message=str(file_data_lines))
+            db.commit()
+            db.debug_tbl.insert(error_message=str(file_data_lines[0]))
+            db.commit()
+            db.debug_tbl.insert(error_message=str(file_data_lines[0].split(',')))
+            db.commit()
+
+
 
 
             ## Connect to the timeseries table, this table has a hash and a range key
@@ -209,7 +218,7 @@ def upload_logfile():
                 for row in file_data_lines:
 
                     ## Get rid of whitespace at the beginning and end of the row
-                    row.strip()
+                    row=row.strip()
 
                     ## Seperate the 'row' into what would be cells if opened in csv or excel format
                     cells=row.split(',')
