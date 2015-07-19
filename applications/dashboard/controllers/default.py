@@ -228,7 +228,8 @@ def upload_logfile():
                     cells=row.split(',')
 
                     ## for testing purposes get the ts
-                    timestamp=cells[0]
+                    ## the second slice is to remove the quotes that the acquisuite sends around the ts
+                    timestamp=cells[0][1:-1]
 
                     ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
                     cumulative_reading=cells[4]
@@ -325,3 +326,59 @@ def view_aws_timeseries():
 
 def iframe_test():
     return dict()
+
+
+
+def datatables():
+    return dict()
+
+
+def view_aws_datatables():
+    return dict()
+
+
+def ajax_view_aws_timeseries():
+    import boto.dynamodb2
+    from boto.dynamodb2.table import Table
+    import os, json
+    from datetime import datetime
+
+    print request.vars
+
+    conn=boto.dynamodb2.connect_to_region(
+        'us-east-1',
+        aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
+        aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
+        )
+
+    tst = Table('timeseriestable',connection=conn)
+
+    # timeseriesname=request.args[0]
+    timeseriesname='001EC600229C_250'
+
+    timeseriesdata=tst.query_2(
+        timeseriesname__eq=timeseriesname,
+        consistent=True,
+        )
+
+    timeserieslist=[]
+    for entry in timeseriesdata:
+        timeserieslist.append([entry['timeseriesname'],
+                          entry['timestamp'],
+                          entry['cumulative_electric_usage_kwh']]
+                         )
+
+    items=int(request.vars['length'])
+    start=int(request.vars['start'])
+    draw=int(request.vars['draw'])
+    end=start+items
+
+    data_dict=dict(
+        draw=draw,
+        recordsTotal=len(timeserieslist),
+        recordsFiltered=len(timeserieslist),
+        data=timeserieslist[start:end]
+        )
+
+    #return dict(timeserieslist=timeserieslist)
+    return json.dumps(data_dict)

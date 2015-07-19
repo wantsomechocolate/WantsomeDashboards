@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-<link rel="stylesheet" href="{{=URL('static','css/wsd.css')}}"/>
-</head>
-<body>
+{{ extend 'layout.html' }}
 
 <h3>
 For Device: {{ =request.args[0] }}
 </h3>
 
-<table>
-	<tr>
+<table id="aws-data-table" class="display" cellspacing="0" width="100%">
+	<thead>
 		<th>
 			Device ID
 		</th>
@@ -20,7 +15,21 @@ For Device: {{ =request.args[0] }}
 		<th>
 			Cumulative kWh
 		</th>
-	</tr>
+	</thead>
+
+	<tfoot>
+		<th>
+			Device ID
+		</th>
+		<th>
+			Datetimestamp
+		</th>
+		<th>
+			Cumulative kWh
+		</th>
+	</tfoot>
+
+	<tbody>
 	{{ for row in timeserieslist: }}
 		<tr>
 		{{ for cell in row: }}
@@ -30,8 +39,5 @@ For Device: {{ =request.args[0] }}
 		{{ pass }}
 		</tr>
 	{{ pass }}
+	</tbody>
 </table>
-
-
-</body>
-</html>
