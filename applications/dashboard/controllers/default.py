@@ -353,8 +353,8 @@ def ajax_view_aws_timeseries():
 
     tst = Table('timeseriestable',connection=conn)
 
-    # timeseriesname=request.args[0]
-    timeseriesname='001EC600229C_250'
+    timeseriesname=request.args[0]
+    # timeseriesname='001EC600229C_250'
 
     timeseriesdata=tst.query_2(
         timeseriesname__eq=timeseriesname,
@@ -367,6 +367,8 @@ def ajax_view_aws_timeseries():
                           entry['timestamp'],
                           entry['cumulative_electric_usage_kwh']]
                          )
+
+
 
     items=int(request.vars['length'])
     start=int(request.vars['start'])
@@ -381,4 +383,86 @@ def ajax_view_aws_timeseries():
         )
 
     #return dict(timeserieslist=timeserieslist)
+    # print json.dumps(data_dict)
+    # return json.dumps(timeserieslist)
     return json.dumps(data_dict)
+
+
+
+
+def ajax_graph_aws_timeseries():
+    import boto.dynamodb2
+    from boto.dynamodb2.table import Table
+    import os, json
+    from datetime import datetime
+
+    # print request.vars
+
+    conn=boto.dynamodb2.connect_to_region(
+        'us-east-1',
+        aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
+        aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
+        )
+
+    tst = Table('timeseriestable',connection=conn)
+
+    timeseriesname=request.args[0]
+    # timeseriesname='001EC600229C_250'
+
+    timeseriesdata=tst.query_2(
+        timeseriesname__eq=timeseriesname,
+        consistent=True,
+        )
+
+    timeserieslist=[]
+    datalist=[]
+    for entry in timeseriesdata:
+        if entry['timestamp'][0]=="'":
+            timeserieslist.append([
+                        entry['timeseriesname'],
+                        entry['timestamp'][1:-1],
+                        entry['cumulative_electric_usage_kwh']
+                        ])
+        else:
+           timeserieslist.append([
+                        entry['timeseriesname'],
+                        entry['timestamp'],
+                        entry['cumulative_electric_usage_kwh']
+                        ])
+
+        datalist.append(entry['cumulative_electric_usage_kwh'])
+
+
+
+    # for i in range(1,len(timeserieslist)):
+    #     timeserieslist[i][2]=float(timeserieslist[i][2])-float(timeserieslist[i-1][2])
+
+
+
+    # data_dict=dict(data1=timeserieslist)
+
+    # items=int(request.vars['length'])
+    # start=int(request.vars['start'])
+    # draw=int(request.vars['draw'])
+    # end=start+items
+
+    # data_dict=dict(
+    #     draw=draw,
+    #     recordsTotal=len(timeserieslist),
+    #     recordsFiltered=len(timeserieslist),
+    #     data=timeserieslist[start:end]
+    #     )
+
+    #return dict(timeserieslist=timeserieslist)
+    # print json.dumps(data_dict)
+    return json.dumps(timeserieslist[-100:])
+    # return json.dumps(data_dict)
+
+
+
+
+def d3play():
+    return dict()
+
+def device():
+    return dict()
