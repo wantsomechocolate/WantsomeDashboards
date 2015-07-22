@@ -133,6 +133,25 @@ def upload_logfile():
         ## If there is a log file continue on!
         else:
 
+            ## Save the device information
+            ## The device id is going to be the serial_number of parent unit and the modbus address of that unit
+            ## Seperated by an underscore. 
+            device_id=request.vars['SERIALNUMBER']+'_'+request.vars['MODBUSDEVICE']
+
+            ## The log_filename
+            log_filename=field_storage_object.name
+
+            ## First thing is to save the logfile in case a false success is achieved!
+            ## logfiles are stored in the log_files table
+            ## At this point we already know we have a logfile in the url so.....
+            db.log_files.insert(
+                device_id=device_id,
+                log_filename=log_filename,
+                log_file=field_storage_object,
+                )
+
+
+            ## If we get passed that part, then we can move on to putting the data in Dynamo
 
             ## Create the connection object to talk to dynamo
             conn=boto.dynamodb2.connect_to_region(
@@ -147,11 +166,6 @@ def upload_logfile():
             ## like uptime, parent DAS, etc. 
             table = Table('device_attributes',connection=conn)
 
-
-            ## Save the device information
-            ## The device id is going to be the serial_number of parent unit and the modbus address of that unit
-            ## Seperated by an underscore. 
-            device_id=request.vars['SERIALNUMBER']+'_'+request.vars['MODBUSDEVICE']
 
 
             ## The hash key is the device id! So let's start off the data dictionary (which will go into 
@@ -198,14 +212,6 @@ def upload_logfile():
 
             ## The file string comes in with newlines intact, split on the newlines to effectively get rows
             file_data_lines=file_data_as_string.split('\n')
-
-            # db.debug_tbl.insert(error_message=str(file_data_lines))
-            # db.commit()
-            # db.debug_tbl.insert(error_message=str(file_data_lines[0]))
-            # db.commit()
-            # db.debug_tbl.insert(error_message=str(file_data_lines[0].split(',')))
-            # db.commit()
-
 
 
 

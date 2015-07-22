@@ -472,3 +472,42 @@ UPDATE debug_tbl SET error_message=error_message__tmp;
 ALTER TABLE debug_tbl DROP COLUMN error_message__tmp;
 success!
 success!
+timestamp: 2015-07-22T08:40:14.128827
+CREATE TABLE logfiles(
+    id SERIAL PRIMARY KEY,
+    das_id VARCHAR(512),
+    log_filename VARCHAR(512),
+    log_file VARCHAR(512)
+);
+success!
+timestamp: 2015-07-22T08:42:54.917681
+ALTER TABLE das_config ADD das_location VARCHAR(512);
+timestamp: 2015-07-22T08:42:55.004728
+ALTER TABLE das_config DROP COLUMN location;
+success!
+timestamp: 2015-07-22T08:42:55.193756
+ALTER TABLE device_config ADD device_location VARCHAR(512);
+timestamp: 2015-07-22T08:42:55.345933
+ALTER TABLE device_config DROP COLUMN location;
+success!
+timestamp: 2015-07-22T08:42:55.578547
+ALTER TABLE logfiles ADD device_id VARCHAR(512);
+success!
+timestamp: 2015-07-22T08:43:43.564030
+ALTER TABLE das_config ADD das_id VARCHAR(512);
+success!
+timestamp: 2015-07-22T08:43:43.939075
+ALTER TABLE device_config ADD device_id VARCHAR(512);
+success!
+timestamp: 2015-07-22T08:44:45.546296
+CREATE TABLE log_files(
+    id SERIAL PRIMARY KEY,
+    das_id VARCHAR(512),
+    device_id VARCHAR(512),
+    log_filename VARCHAR(512),
+    log_file VARCHAR(512)
+);
+success!
+timestamp: 2015-07-22T08:59:37.383121
+ALTER TABLE log_files DROP COLUMN das_id;
+success!

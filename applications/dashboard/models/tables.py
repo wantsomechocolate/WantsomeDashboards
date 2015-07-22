@@ -1,8 +1,8 @@
 
-db.define_table('page_visit_count',
-	Field('page_name'),
-	Field('counter', 'integer'),
-	)
+# db.define_table('page_visit_count',
+# 	Field('page_name'),
+# 	Field('counter', 'integer'),
+# 	)
 
 db.define_table('page_visit_data',
 	Field('page_name'),
@@ -19,8 +19,9 @@ db.define_table('debug_tbl',
 	)
 
 db.define_table('das_config',
+	Field('das_id'),
 	Field('serial_number'),
-	Field('location'),
+	Field('das_location'),
 	Field('notes'),
 	)
 
@@ -32,11 +33,22 @@ db.define_table('das_config',
 
 
 db.define_table('device_config',
+	Field('device_id'),
 	Field('serial_number'),
 	Field('measuring'),
-	Field('location'),
+	Field('device_location'),
 	Field('notes'),
 	)
+
+
+db.define_table('log_files',
+	Field('device_id'),
+	Field('log_filename'),
+	Field('log_file', 'upload'),
+	)
+
+
+	
 
 
 ## If I store the acquisuite info in dynamo, I don't have to worry about the names of the params,

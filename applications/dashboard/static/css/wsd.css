@@ -37,3 +37,7 @@ td{
 .wsd-navbar-brand{
 	width:100px;
 }
+
+.wsd-toggle{
+ 	background-image: linear-gradient(to bottom,#2E2E2E 0,#3C3C3C 100%) !important;
+}
