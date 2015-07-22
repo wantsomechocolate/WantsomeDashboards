@@ -3,17 +3,18 @@
 
 {{block header}}
     <header class="container-fluid background">
-      <div class="jumbotron text-center">
-        {{if response.title:}}
-        <h1>{{=response.title}}
-          <small>{{=response.subtitle or ''}}</small></h1>
-        {{pass}}
+      <div class="jumbotron text-center wsd-jumbotron">
+
+        <h1>
+          <small></small>
+        </h1>
+
       </div>
     </header>
 {{end}}
 
 {{if 'message' in globals():}}
-<h2>{{=message}}</h2>
+<h2>Welcome to Bill Auditing and Tenant Submetering!</h2>
 <p class="lead">{{=T('How did you get here?')}}</p>
 <ol>
   <li>{{=T('You are successfully running web2py')}}</li>
@@ -34,19 +35,20 @@
 {{pass}}
 
 {{block right_sidebar}}
-<div class="panel panel-info">
-  <div class="panel-heading"><h3 class="panel-title"><a class="btn-block"
-      href="{{=URL('admin','default','index')}}">
-      <i class="glyphicon glyphicon-cog"></i>
-      {{=T("admin")}}
-    </a></h3></div>
-  <div class="panel-body">
-    {{=T("Don't know what to do?")}}
+<div class="panel panel-info wsd-index-admin-panel">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      <a class="btn-block"
+        href="{{=URL('admin','default','index')}}">
+        <i class="glyphicon glyphicon-cog"></i>
+        {{=T("Admin Pages")}}
+      </a>
+    </h3>
   </div>
+
   <ul class="list-group">
-    <li class="list-group-item">{{=A(T("Online examples"), _href=URL('examples','default','index'))}}</li>
-    <li class="list-group-item"><a href="http://web2py.com">web2py.com</a></li>
-    <li class="list-group-item"><a href="http://web2py.com/book">{{=T('Documentation')}}</a></li>
+    <li class="list-group-item">{{=A(T("Site Administration"), _href=URL('admin','site','index'))}}</li>
+    <li class="list-group-item">{{=A(T("Database Administration"), _href=URL('appadmin','index'))}}</li>
   </ul>
 </div>
 {{end}}

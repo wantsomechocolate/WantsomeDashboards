@@ -471,3 +471,4 @@ ALTER TABLE debug_tbl ADD error_message TEXT;
 UPDATE debug_tbl SET error_message=error_message__tmp;
 ALTER TABLE debug_tbl DROP COLUMN error_message__tmp;
 success!
+success!

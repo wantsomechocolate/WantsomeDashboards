@@ -1,0 +1,16 @@
+
+By Default, all device data is saved in dynamo. Once the device is configured, only data for the chosen fields are saved.
+This means that no data is lost
+
+Or I could say that the default is that no data gets saved until a unit is configured (once it is, I retrieve data from matching log files manually)
+Even saving the logfiles though should probably be done via amazon. but a regular sql or postgresql db. 
+
+I'm not sure. Regardless, on the front end
+
+For admin users
+
+View devices independantly
+Graph data for a given range, date selectors, zooming panning, updating with user input
+Tabular data with filters, searching, etc. This is partly done.
+
+View DAS independantly. Have a page for viewing all info about a das. Have one graph where various parameters can be turned on/off etc. etc. 

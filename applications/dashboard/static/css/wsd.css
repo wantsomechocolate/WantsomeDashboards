@@ -17,3 +17,23 @@ td{
 	padding-right: 5px;
 	padding-left: 5px;
 }
+
+.wsd-jumbotron{
+	height:40vmin;
+}
+
+.wsd-index-admin-panel{
+	margin-top: 30px;
+}
+
+.bat-logo{
+	width:50px;
+	transform:rotate(45deg);
+	position:absolute;
+	top: -5px;
+	left: 50px;
+}
+
+.wsd-navbar-brand{
+	width:100px;
+}
