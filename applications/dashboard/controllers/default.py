@@ -150,6 +150,9 @@ def upload_logfile():
                 log_file=field_storage_object,
                 )
 
+            ## Commit changes in case errors happen before db io
+            db.commit()
+
 
             ## If we get passed that part, then we can move on to putting the data in Dynamo
 
@@ -192,14 +195,14 @@ def upload_logfile():
             ## use the native gzip library to read in the gzip file 
             ## which came from the url variable, which web2py turned into a python fieldstorage object
             ## which web2py then put back into the post vars as LOGFILE.
-            ## If the mode of r is not passed in (rb in python3), then it will assumed the 
+            ## If the mode of r is not passed in (rb in python3), then it will assume the 
             ## default type which is WRITE (I know right) and it will actually complain that 
             ## you are trying to read from a write-only file :/
             file_handle=gzip.GzipFile(fileobj=field_storage_object.file, mode='r')
 
 
             ## This line reads the entire contents of the file into a string. 
-            ## I hope they files don't get too big!
+            ## I hope the files don't get too big!
             ## I tried using readlines which auto chops up the lines into items of a list
             ## BUT it gives an error, I guess gzip produces a slightly different type of file handle
             ## than the standard python 'open' construct. 
@@ -207,12 +210,12 @@ def upload_logfile():
 
 
             ## If you don't do this, then you will have an empty line at the end of your file and get all the index errors
+            ## I'm actually still getting some index errors with this included. But its likely because there was an error line?
             file_data_as_string=file_data_as_string.strip()
 
 
             ## The file string comes in with newlines intact, split on the newlines to effectively get rows
             file_data_lines=file_data_as_string.split('\n')
-
 
 
             ## Connect to the timeseries table, this table has a hash and a range key
@@ -238,16 +241,23 @@ def upload_logfile():
                     ## the second slice is to remove the quotes that the acquisuite sends around the ts
                     timestamp=cells[0][1:-1]
 
-                    ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
-                    cumulative_reading=cells[4]
+                    try:
+                        ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
+                        cumulative_reading=cells[4]
 
-                    ## populate the context manager with our requests
-                    ## when the with clause is natrually exited, the batch write request will occur. 
-                    batch.put_item(data=dict(
-                        timeseriesname=device_id,
-                        timestamp=timestamp,
-                        cumulative_electric_usage_kwh=cumulative_reading,
-                        ))
+                        ## populate the context manager with our requests
+                        ## when the with clause is natrually exited, the batch write request will occur. 
+                        ## This is where I should fill up the other fields by default and have mappings
+                        ## to configured names and allow user to "include only" or "exclude"
+                        batch.put_item(data=dict(
+                            timeseriesname=device_id,
+                            timestamp=timestamp,
+                            cumulative_electric_usage_kwh=cumulative_reading,
+                            ))
+
+                    except IndexError:
+                        ## Save the lines that counldn't be added 
+                        db.debug_tbl.insert(error_message=str(cumulative_reading))
 
             
     else:
