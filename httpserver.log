@@ -8556,3 +8556,5 @@
 127.0.0.1, 2015-07-22 09:03:36, GET, /admin/static/_2.11.2/css/bootstrap-responsive.min.css, HTTP/1.1, 200, 0.000444
 127.0.0.1, 2015-07-22 09:03:36, GET, /admin/static/_2.11.2/js/bootstrap.min.js, HTTP/1.1, 200, 0.000580
 127.0.0.1, 2015-07-22 09:03:52, POST, /admin/check_version, HTTP/1.1, 200, 20.574550
+127.0.0.1, 2015-07-22 15:30:35, GET, /success, HTTP/1.1, 200, 1.431257
+127.0.0.1, 2015-07-22 15:30:35, GET, /favicon.ico, HTTP/1.1, 404, 0.000493

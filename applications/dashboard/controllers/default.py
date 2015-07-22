@@ -473,3 +473,7 @@ def d3play():
 
 def device():
     return dict()
+
+
+def success():
+    return dict()
