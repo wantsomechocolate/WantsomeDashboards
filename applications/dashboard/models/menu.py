@@ -52,11 +52,11 @@ def _():
 
         (T('Pages'), False, '#', [
 
-          (T('View Device Info'), False, URL('view_aws_info', args=['device_attributes'])),
+          (T('View DAQ Info'), False, URL('view_aws_info', args=['das_attributes'])),
 
           LI(_class="divider"),
 
-          (T('View DAQ Info'), False, URL('view_aws_info', args=['das_attributes'])),
+          (T('View Device Info'), False, URL('view_aws_info', args=['device_attributes'])),
 
         ]),
     

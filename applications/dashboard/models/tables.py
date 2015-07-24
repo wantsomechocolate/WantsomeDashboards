@@ -45,6 +45,7 @@ db.define_table('log_files',
 	Field('device_id'),
 	Field('log_filename'),
 	Field('log_file', 'upload'),
+	Field('date_added','datetime'),
 	)
 
 

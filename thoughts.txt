@@ -14,3 +14,14 @@ Graph data for a given range, date selectors, zooming panning, updating with use
 Tabular data with filters, searching, etc. This is partly done.
 
 View DAS independantly. Have a page for viewing all info about a das. Have one graph where various parameters can be turned on/off etc. etc. 
+
+
+
+
+Types of configurations for collecting and storing data in dynamo
+
+Obvius Powerscout System Total Net True Energy								[4]
+Obvius Powerscout System Total Net True Energy With Pulse Output 1			[4, -2]
+Obvius Powerscout System Total Net True Energy With Pulse Output 1 and 2 	[4, -2, -1]
+Babelbuster																	[4:]
+All Fields 																	[All]

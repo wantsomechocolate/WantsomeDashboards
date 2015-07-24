@@ -148,6 +148,7 @@ def upload_logfile():
                 device_id=device_id,
                 log_filename=log_filename,
                 log_file=field_storage_object,
+                date_added=datetime.now(),
                 )
 
             ## Commit changes in case errors happen before db io
@@ -257,7 +258,7 @@ def upload_logfile():
 
                     except IndexError:
                         ## Save the lines that counldn't be added 
-                        db.debug_tbl.insert(error_message=str(cumulative_reading))
+                        db.debug_tbl.insert(error_message=str(cells), other_info=str(datetime.now()))
 
             
     else:
