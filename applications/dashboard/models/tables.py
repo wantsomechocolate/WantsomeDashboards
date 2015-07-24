@@ -1,4 +1,8 @@
 
+import fs.s3fs
+myfs = fs.s3fs.S3FS('wantsomedashboards','logfiles',os.environ['AWS_WSDS3_KEY'], os.environ['AWS_WSDS3_SECRET'])
+
+
 # db.define_table('page_visit_count',
 # 	Field('page_name'),
 # 	Field('counter', 'integer'),
@@ -47,6 +51,8 @@ db.define_table('log_files',
 	Field('log_file', 'upload'),
 	Field('date_added','datetime'),
 	)
+
+db.log_files.log_file.uploadfs=myfs
 
 
 	
