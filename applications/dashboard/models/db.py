@@ -36,10 +36,10 @@ if not request.env.web2py_runtime_gae:
     
     ## do whatever you want!
     else:
-        # db = DAL(myconf.take('db.uri'), pool_size=myconf.take('db.pool_size', cast=int), check_reserved=['all'])
+        db = DAL(myconf.take('db.uri'), pool_size=myconf.take('db.pool_size', cast=int), check_reserved=['all'])
 
-        uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
-        db = DAL(uri, pool_size=10)
+        # uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+        # db = DAL(uri, pool_size=10)
 
         # uri = "mysql://%(RDS_USERNAME)s:%(RDS_PASSWORD)s@%(RDS_HOSTNAME)s:%(RDS_PORT)s/%(RDS_DB_NAME)s" % os.environ
         # db = DAL(uri, pool_size=10)

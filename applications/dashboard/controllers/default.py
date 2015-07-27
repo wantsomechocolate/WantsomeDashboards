@@ -152,6 +152,7 @@ def upload_logfile():
                 )
 
             ## Commit changes in case errors happen before db io
+            ## This saves the files to an S3 bucket
             db.commit()
 
 
@@ -212,6 +213,7 @@ def upload_logfile():
 
             ## If you don't do this, then you will have an empty line at the end of your file and get all the index errors
             ## I'm actually still getting some index errors with this included. But its likely because there was an error line?
+            ## It turned out it was just blank lines
             file_data_as_string=file_data_as_string.strip()
 
 
@@ -225,6 +227,20 @@ def upload_logfile():
             ## It is close to ISO format anyway. 
             timeseriestable = Table('timeseriestable',connection=conn)
 
+
+
+            ## At this point, we need to know what data we are saving from this particular device. 
+            ## Acquisuites do a pretty good job of keeping things in the same order accross lines of devices etc
+            ## What I'm going to do is assume that if I can't find a configuration for the particular DEVICE, then I 
+            ## will save all parameters related to that device. 
+            ## If there is a config file found, it will consist of a flag for include or exlcude and the columns
+            ## to include or exclude. 
+            ## So where do I keep this config information!
+            ## at the device level of course in a table that lists devices (Serialnumber_modbusaddress)
+            ## In another field it will list the flag, in a third field it will have the columns
+            ## if it fails to interpret what is placed in either field it will save all the information to dynamo
+
+            ## So basically, look for the config info in a table called device_config?
 
             ## This with clause is for batch writing. 
             with timeseriestable.batch_write() as batch:
@@ -280,7 +296,6 @@ def upload_logfile():
 ## Loop through the file going a line at a time (one line will be one timestamp)
 ## Make sure line is <0 but less than 512? why less than 512 byts?
 ## put the data you want in the locations you want!
-
 
 #Done!
 
@@ -488,3 +503,22 @@ def device():
 
 def success():
     return dict()
+
+
+def ajax_dynamo_delete_das():
+
+    das_id=request.args[0]
+
+    return True
+
+
+def view_table():
+    table_name=request.vars['table_name']
+
+    if request.vars['db']=='dynamo':
+        return dict(message="Not Supported Yet")
+
+    elif request.vars['db']=='postgres':
+        grid=SQLFORM.grid(db[table_name])
+
+        return dict(grid=grid)

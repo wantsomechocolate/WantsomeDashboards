@@ -70,3 +70,11 @@ db.log_files.log_file.uploadfs=myfs
 ## I still need a DAS config to use as data validation. But I could still actually use dynamo.....
 ## But then letting other people configure units might be tricky. I'll keep that in the postgre db for now
 
+
+
+db.define_table('device_field_groups',
+	Field('field_group_name'),
+	Field('field_group_type'),
+	Field('field_group_columns','list:integer'))
+
+db.device_field_groups.field_group_type.requires=IS_IN_SET(('include','exclude'))

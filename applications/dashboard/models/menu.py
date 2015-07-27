@@ -58,6 +58,14 @@ def _():
 
           (T('View Device Info'), False, URL('view_aws_info', args=['device_attributes'])),
 
+          LI(_class="divider"),
+
+          (T('View Tables'), True, '#', [
+
+            (T('Device Group Fields'), False, URL( 'view_table', vars=dict(table_name='device_field_groups',db='postgres'))),
+
+            ]),
+
         ]),
     
     ]
