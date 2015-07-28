@@ -118,7 +118,11 @@ def upload_logfile():
 
 
         ## Now that the info is in dynamo, put some basic info in the db that web2py talks with more easily
-        db.das_config.update_or_insert(das_id=request.vars['SERIALNUMBER'])
+        db.das_config.update_or_insert(
+            das_id=request.vars['SERIALNUMBER'],
+            serial_number=request.vars['SERIALNUMBER'],
+            last_modified=datetime.now(),
+            )
 
 
 
@@ -157,7 +161,11 @@ def upload_logfile():
 
 
             ## add device info locally. 
-            db.device_config.update_or_insert(device_id=device_id)
+            db.device_config.update_or_insert(
+                device_id=device_id,
+                das_id=request.vars['SERIALNUMBER']
+                last_modified=datetime.now()
+                )
 
             ## Commit changes in case errors happen before db io
             ## This saves the files to an S3 bucket

@@ -595,3 +595,37 @@ timestamp: 2015-07-27T21:14:50.351707
 ALTER TABLE device_field_groups ADD last_modified TIMESTAMP;
 success!
 success!
+timestamp: 2015-07-28T07:27:59.845201
+ALTER TABLE arbitrary_field_groups ADD add_or_subtract VARCHAR(512);
+success!
+timestamp: 2015-07-28T07:34:51.241741
+ALTER TABLE arbitrary_field_groups ADD das_id__tmp VARCHAR(512);
+UPDATE arbitrary_field_groups SET das_id__tmp=das_id;
+ALTER TABLE arbitrary_field_groups DROP COLUMN das_id;
+ALTER TABLE arbitrary_field_groups ADD das_id VARCHAR(512);
+UPDATE arbitrary_field_groups SET das_id=das_id__tmp;
+ALTER TABLE arbitrary_field_groups DROP COLUMN das_id__tmp;
+success!
+timestamp: 2015-07-28T07:36:28.546932
+ALTER TABLE arbitrary_field_groups ADD device_id__tmp VARCHAR(512);
+UPDATE arbitrary_field_groups SET device_id__tmp=device_id;
+ALTER TABLE arbitrary_field_groups DROP COLUMN device_id;
+ALTER TABLE arbitrary_field_groups ADD device_id VARCHAR(512);
+UPDATE arbitrary_field_groups SET device_id=device_id__tmp;
+ALTER TABLE arbitrary_field_groups DROP COLUMN device_id__tmp;
+success!
+timestamp: 2015-07-28T07:40:22.476251
+ALTER TABLE device_config ADD das_id__tmp VARCHAR(512);
+UPDATE device_config SET das_id__tmp=das_id;
+ALTER TABLE device_config DROP COLUMN das_id;
+ALTER TABLE device_config ADD das_id VARCHAR(512);
+UPDATE device_config SET das_id=das_id__tmp;
+ALTER TABLE device_config DROP COLUMN das_id__tmp;
+success!
+timestamp: 2015-07-28T07:47:33.923995
+ALTER TABLE device_config ADD last_modified TIMESTAMP;
+timestamp: 2015-07-28T07:47:34.170086
+ALTER TABLE device_config DROP COLUMN last_visited;
+timestamp: 2015-07-28T07:47:34.488587
+ALTER TABLE device_config DROP COLUMN serial_number;
+success!
