@@ -1,4 +1,5 @@
 
+from datetime import datetime
 import fs.s3fs
 myfs = fs.s3fs.S3FS('wantsomedashboards','logfiles',os.environ['AWS_WSDS3_KEY'], os.environ['AWS_WSDS3_SECRET'])
 
@@ -22,11 +23,13 @@ db.define_table('debug_tbl',
 	Field('other_info'),
 	)
 
+
 db.define_table('das_config',
 	Field('das_id'),
 	Field('serial_number'),
 	Field('das_location'),
 	Field('notes'),
+	Field('last_modified','datetime'),
 	)
 
 ## This info will be stored in dynamo!
@@ -38,15 +41,17 @@ db.define_table('das_config',
 
 db.define_table('device_config',
 	Field('device_id'),
+	Field('das_id','reference das_config'),
 	Field('serial_number'),
 	Field('measuring'),
 	Field('device_location'),
 	Field('notes'),
+	Field('last_visited', 'datetime'),
 	)
 
 
 db.define_table('log_files',
-	Field('device_id'),
+	Field('device_id', 'reference device_config'),
 	Field('log_filename'),
 	Field('log_file', 'upload'),
 	Field('date_added','datetime'),
@@ -75,6 +80,24 @@ db.log_files.log_file.uploadfs=myfs
 db.define_table('device_field_groups',
 	Field('field_group_name'),
 	Field('field_group_type'),
-	Field('field_group_columns','list:integer'))
+	Field('field_group_columns','list:integer'),
+	Field('last_modified','datetime'),
+	)
 
 db.device_field_groups.field_group_type.requires=IS_IN_SET(('include','exclude'))
+
+
+##I don't want to limit this to tenants right now, but I can't think of another name!
+db.define_table('arbitrary_field_groups',
+	Field('field_group_name'),
+	Field('das_id','reference das_config'),
+	Field('device_id','reference device_config'),
+	Field('field_ids','list:integer'),
+	Field('multiplier','double'),
+	Field('percentage','double'),
+	Field('last_modified','datetime'),
+	)
+
+## limit to percent
+db.arbitrary_field_groups.percentage.requires=IS_FLOAT_IN_RANGE(0,1)
+db.arbitrary_field_groups.last_modified.default=datetime.now()

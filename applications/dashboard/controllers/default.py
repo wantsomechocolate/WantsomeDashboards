@@ -117,6 +117,10 @@ def upload_logfile():
         #     table.get_item(serial_number=data['serial_number'])
 
 
+        ## Now that the info is in dynamo, put some basic info in the db that web2py talks with more easily
+        db.das_config.update_or_insert(das_id=request.vars['SERIALNUMBER'])
+
+
 
 
     ## This means we are getting data from a device
@@ -150,6 +154,10 @@ def upload_logfile():
                 log_file=field_storage_object,
                 date_added=datetime.now(),
                 )
+
+
+            ## add device info locally. 
+            db.device_config.update_or_insert(device_id=device_id)
 
             ## Commit changes in case errors happen before db io
             ## This saves the files to an S3 bucket
@@ -522,3 +530,11 @@ def view_table():
         grid=SQLFORM.grid(db[table_name])
 
         return dict(grid=grid)
+
+
+
+# def das_test():
+#     das_list=list(db().select(db.das_config.das_id)
+#     if '001EC600229C' in das_list:
+#         print "yay"
+#     return dict(das_list=das_list)

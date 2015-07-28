@@ -558,3 +558,40 @@ CREATE TABLE device_field_groups(
     field_group_columns TEXT
 );
 success!
+timestamp: 2015-07-27T20:54:13.370604
+CREATE TABLE arbitrary_field_groups(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    field_group_name CHAR(512),
+    das_id CHAR(512),
+    device_id CHAR(512),
+    field_ids TEXT,
+    multiplier DOUBLE,
+    percentage DOUBLE,
+    last_modified TIMESTAMP
+);
+success!
+timestamp: 2015-07-27T21:04:21.717919
+CREATE TABLE arbitrary_field_groups(
+    id SERIAL PRIMARY KEY,
+    field_group_name VARCHAR(512),
+    das_id VARCHAR(512),
+    device_id VARCHAR(512),
+    field_ids TEXT,
+    multiplier FLOAT8,
+    percentage FLOAT8,
+    last_modified TIMESTAMP
+);
+success!
+timestamp: 2015-07-27T21:14:49.507071
+ALTER TABLE das_config ADD last_modified TIMESTAMP;
+success!
+timestamp: 2015-07-27T21:14:49.770906
+ALTER TABLE device_config ADD das_id INTEGER REFERENCES das_config (id) ON DELETE CASCADE;
+timestamp: 2015-07-27T21:14:50.173910
+ALTER TABLE device_config ADD last_visited TIMESTAMP;
+success!
+success!
+timestamp: 2015-07-27T21:14:50.351707
+ALTER TABLE device_field_groups ADD last_modified TIMESTAMP;
+success!
+success!
