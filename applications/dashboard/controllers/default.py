@@ -176,17 +176,21 @@ def upload_logfile():
 
 
 
-            ## Now get what fields you want to collect
+            try:
 
-            ## This says - look in db table device config for a device with id device_id, then from the records that match (should be 1), 
-            ## only select the field device_field_groups. Take the first record (again, should only be one) and give me just the value
-            ## without the dot operator at the end it would be a dictionary
-            device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
+                ## Now get what fields you want to collect
 
-            ## So we have the name of the group
-            device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
+                ## This says - look in db table device config for a device with id device_id, then from the records that match (should be 1), 
+                ## only select the field device_field_groups. Take the first record (again, should only be one) and give me just the value
+                ## without the dot operator at the end it would be a dictionary
+                device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
 
+                ## So we have the name of the group
+                device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
 
+            except:
+
+                device_fields_collect='ALL'
 
 
 
@@ -304,8 +308,13 @@ def upload_logfile():
                         ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
                         # cumulative_reading=cells[4]
 
-                        for index in device_fields_collect:
-                            data[device_id+'__'+str(index)]=cells[int(index)]
+                        if device_fields_collect=='ALL':
+                            for index in range(len(cells)):
+                                data[device_id+'__'+str(index)]=cells[int(index)]
+
+                        else:
+                            for index in device_fields_collect:
+                                data[device_id+'__'+str(index)]=cells[int(index)]
 
                         ## populate the context manager with our requests
                         ## when the with clause is natrually exited, the batch write request will occur. 
