@@ -45,20 +45,25 @@ db.define_table('device_config',
 	# Field('serial_number'),
 	Field('measuring'),
 	Field('device_location'),
+
+	Field('device_field_groups'),
+
 	Field('notes'),
 	Field('last_modified', 'datetime'),
 	)
 db.device_config.das_id.requires=IS_IN_DB(db,'das_config.das_id')
 db.device_config.last_modified.default=datetime.now()
+db.device_config.device_field_groups.requires=IS_IN_DB(db,'device_field_groups.field_group_name')
 
 
 db.define_table('log_files',
-	Field('device_id', 'reference device_config'),
+	Field('device_id'),
 	Field('log_filename'),
 	Field('log_file', 'upload'),
 	Field('date_added','datetime'),
 	)
 db.log_files.log_file.uploadfs=myfs
+db.log_files.device_id.requires=IS_IN_DB(db,'device_config.device_id')
 
 
 	

@@ -93,13 +93,13 @@ p34
 I2
 sS'sql'
 p35
-S'INTEGER REFERENCES device_config (id) ON DELETE CASCADE'
+S'VARCHAR(512)'
 p36
 sS'notnull'
 p37
 I00
 sS'type'
 p38
-S'reference device_config'
+S'string'
 p39
 ss.

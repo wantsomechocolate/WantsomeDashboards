@@ -119,6 +119,7 @@ def upload_logfile():
 
         ## Now that the info is in dynamo, put some basic info in the db that web2py talks with more easily
         db.das_config.update_or_insert(
+            db.das_config.das_id==request.vars['SERIALNUMBER'],
             das_id=request.vars['SERIALNUMBER'],
             serial_number=request.vars['SERIALNUMBER'],
             last_modified=datetime.now(),
@@ -162,14 +163,31 @@ def upload_logfile():
 
             ## add device info locally. 
             db.device_config.update_or_insert(
+                db.device_config.device_id==device_id,
                 device_id=device_id,
-                das_id=request.vars['SERIALNUMBER']
-                last_modified=datetime.now()
+                das_id=request.vars['SERIALNUMBER'],
+                last_modified=datetime.now(),
                 )
 
             ## Commit changes in case errors happen before db io
             ## This saves the files to an S3 bucket
             db.commit()
+
+
+
+
+            ## Now get what fields you want to collect
+
+            ## This says - look in db table device config for a device with id device_id, then from the records that match (should be 1), 
+            ## only select the field device_field_groups. Take the first record (again, should only be one) and give me just the value
+            ## without the dot operator at the end it would be a dictionary
+            device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
+
+            ## So we have the name of the group
+            device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
+
+
+
 
 
             ## If we get passed that part, then we can move on to putting the data in Dynamo
@@ -178,8 +196,9 @@ def upload_logfile():
             conn=boto.dynamodb2.connect_to_region(
                 'us-east-1',
                 aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
-                aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
+                aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET'],
                 )
+
 
 
             ## Fetch Table that keeps device info (passing in our connection object). 
@@ -274,19 +293,31 @@ def upload_logfile():
                     ## the second slice is to remove the quotes that the acquisuite sends around the ts
                     timestamp=cells[0][1:-1]
 
+
+                    data=dict(
+                        timeseriesname=device_id,
+                        timestamp=timestamp,
+                        )
+
+
                     try:
                         ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
-                        cumulative_reading=cells[4]
+                        # cumulative_reading=cells[4]
+
+                        for index in device_fields_collect:
+                            data[device_id+'__'+str(index)]=cells[int(index)]
 
                         ## populate the context manager with our requests
                         ## when the with clause is natrually exited, the batch write request will occur. 
                         ## This is where I should fill up the other fields by default and have mappings
                         ## to configured names and allow user to "include only" or "exclude"
-                        batch.put_item(data=dict(
-                            timeseriesname=device_id,
-                            timestamp=timestamp,
-                            cumulative_electric_usage_kwh=cumulative_reading,
-                            ))
+                        # batch.put_item(data=dict(
+                        #     timeseriesname=device_id,
+                        #     timestamp=timestamp,
+                        #     cumulative_electric_usage_kwh=cumulative_reading,
+                        #     ))
+
+                        batch.put_item(data)
 
                     except IndexError:
                         ## Save the lines that counldn't be added 
@@ -541,8 +572,18 @@ def view_table():
 
 
 
-# def das_test():
-#     das_list=list(db().select(db.das_config.das_id)
-#     if '001EC600229C' in das_list:
-#         print "yay"
-#     return dict(das_list=das_list)
+def das_test():
+    # das_list=list(db().select(db.das_config.das_id)
+    # if '001EC600229C' in das_list:
+    #     print "yay"
+    # return dict(das_list=das_list)
+
+    device_id=request.args[0]
+
+    device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
+
+    device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
+
+    # list[int(slice[:slice.index(':')]):int(slice[slice.index(':')+1:])]
+
+    return dict(var1=device_field_group, var2=device_fields_collect)
