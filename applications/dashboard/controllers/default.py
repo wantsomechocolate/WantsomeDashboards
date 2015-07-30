@@ -298,15 +298,17 @@ def upload_logfile():
                     timestamp=cells[0][1:-1]
 
 
-                    data=dict(
-                        timeseriesname=device_id,
-                        timestamp=timestamp,
-                        )
+
 
 
                     try:
                         ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
                         # cumulative_reading=cells[4]
+
+                        data=dict(
+                            timeseriesname=device_id,
+                            timestamp=timestamp,
+                            )
 
                         if device_fields_collect=='ALL':
                             for index in range(len(cells)):
@@ -326,11 +328,15 @@ def upload_logfile():
                         #     cumulative_electric_usage_kwh=cumulative_reading,
                         #     ))
 
+                        db.debug_tbl.insert(error_message=str(dict), other_info=str(datetime.now()))
+                        db.commit()
+
                         batch.put_item(data)
 
                     except IndexError:
                         ## Save the lines that counldn't be added 
                         db.debug_tbl.insert(error_message=str(cells), other_info=str(datetime.now()))
+                        db.commit()
 
             
     else:
