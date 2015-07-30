@@ -290,8 +290,10 @@ def upload_logfile():
                     ## Get rid of whitespace at the beginning and end of the row
                     row=row.strip()
 
+
                     ## Seperate the 'row' into what would be cells if opened in csv or excel format
                     cells=row.split(',')
+
 
                     ## for testing purposes get the ts
                     ## the second slice is to remove the quotes that the acquisuite sends around the ts
@@ -300,43 +302,52 @@ def upload_logfile():
 
 
 
+                    # if timestamp
 
-                    try:
-                        ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
-                        # cumulative_reading=cells[4]
 
-                        data=dict(
-                            timeseriesname=device_id,
-                            timestamp=timestamp,
-                            )
+                    #     try:
+                    #         ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
+                    #         # cumulative_reading=cells[4]
 
-                        if device_fields_collect=='ALL':
-                            for index in range(len(cells)):
-                                data[device_id+'__'+str(index)]=cells[int(index)]
+                    data=dict(
+                        timeseriesname=device_id,
+                        timestamp=timestamp,
+                        )
 
-                        else:
-                            for index in device_fields_collect:
-                                data[device_id+'__'+str(index)]=cells[int(index)]
+                    if device_fields_collect=='ALL':
+                        for index in range(len(cells)):
+                            data[device_id+'__'+str(index)]=cells[int(index)]
 
-                        ## populate the context manager with our requests
-                        ## when the with clause is natrually exited, the batch write request will occur. 
-                        ## This is where I should fill up the other fields by default and have mappings
-                        ## to configured names and allow user to "include only" or "exclude"
-                        # batch.put_item(data=dict(
-                        #     timeseriesname=device_id,
-                        #     timestamp=timestamp,
-                        #     cumulative_electric_usage_kwh=cumulative_reading,
-                        #     ))
+                    else:
+                        for index in device_fields_collect:
+                            data[device_id+'__'+str(index)]=cells[int(index)]
 
-                        db.debug_tbl.insert(error_message=str(dict), other_info=str(datetime.now()))
-                        db.commit()
 
-                        batch.put_item(data)
+                    ## populate the context manager with our requests
+                    ## when the with clause is natrually exited, the batch write request will occur. 
+                    ## This is where I should fill up the other fields by default and have mappings
+                    ## to configured names and allow user to "include only" or "exclude"
+                    # batch.put_item(data=dict(
+                    #     timeseriesname=device_id,
+                    #     timestamp=timestamp,
+                    #     cumulative_electric_usage_kwh=cumulative_reading,
+                    #     ))
 
-                    except IndexError:
-                        ## Save the lines that counldn't be added 
-                        db.debug_tbl.insert(error_message=str(cells), other_info=str(datetime.now()))
-                        db.commit()
+                    db.debug_tbl.insert(
+                        error_message=str(data),
+                        other=str(datetime.now()),
+                        row_text=str(row),
+                        cell_text=str(cells),
+                        timestamp=str(timestamp),
+                        )
+                    db.commit()
+
+                    batch.put_item(data=data)
+
+                    # except IndexError:
+                    #     ## Save the lines that counldn't be added 
+                    #     db.debug_tbl.insert(error_message=str(cells), other_info=str(datetime.now()))
+                    #     db.commit()
 
             
     else:

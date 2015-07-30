@@ -640,3 +640,10 @@ ALTER TABLE log_files ADD device_id VARCHAR(512);
 UPDATE log_files SET device_id=device_id__tmp;
 ALTER TABLE log_files DROP COLUMN device_id__tmp;
 success!
+timestamp: 2015-07-29T22:36:10.234961
+ALTER TABLE debug_tbl ADD cell_text TEXT;
+timestamp: 2015-07-29T22:36:10.385590
+ALTER TABLE debug_tbl ADD timestamp_text TEXT;
+timestamp: 2015-07-29T22:36:10.419008
+ALTER TABLE debug_tbl ADD row_text TEXT;
+success!
