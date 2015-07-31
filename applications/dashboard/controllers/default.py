@@ -70,6 +70,8 @@ def upload_logfile():
 
     from datetime import datetime
     import gzip
+    import io
+
 
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
@@ -239,7 +241,7 @@ def upload_logfile():
             ## If the mode of r is not passed in (rb in python3), then it will assume the 
             ## default type which is WRITE (I know right) and it will actually complain that 
             ## you are trying to read from a write-only file :/
-            file_handle=gzip.GzipFile(fileobj=field_storage_object.file, mode='r')
+            file_handle=gzip.GzipFile(fileobj=io.BytesIO(field_storage_object.file), mode='r')
 
 
             ## This line reads the entire contents of the file into a string. 
@@ -247,17 +249,18 @@ def upload_logfile():
             ## I tried using readlines which auto chops up the lines into items of a list
             ## BUT it gives an error, I guess gzip produces a slightly different type of file handle
             ## than the standard python 'open' construct. 
-            file_data_as_string=file_handle.read()
+            #file_data_as_string=file_handle.read()
 
 
             ## If you don't do this, then you will have an empty line at the end of your file and get all the index errors
             ## I'm actually still getting some index errors with this included. But its likely because there was an error line?
             ## It turned out it was just blank lines
-            file_data_as_string=file_data_as_string.strip()
+            #file_data_as_string=file_data_as_string.strip()
 
 
             ## The file string comes in with newlines intact, split on the newlines to effectively get rows
-            file_data_lines=file_data_as_string.split('\n')
+            #file_data_lines=file_data_as_string.split('\n')
+            file_data_lines=file_handle.readlines()
 
 
             ## Connect to the timeseries table, this table has a hash and a range key
@@ -371,6 +374,55 @@ def upload_logfile():
 ## put the data you want in the locations you want!
 
 #Done!
+
+
+
+def parse_logfile_from_db():
+
+    import boto
+    import io
+    import gzip
+    import os
+    import csv
+
+    ## C
+    conn=boto.s3.connect_to_region(
+        'us-east-1',
+        aws_access_key_id=os.environ['AWS_WSDS3_KEY'],
+        aws_secret_access_key=os.environ['AWS_WSDS3_SECRET']
+        )
+
+
+    ## Get a sample logfile FILENAME from the db
+    ## This only gets the FILENAME that was used to name the file in s3
+    ## This code is generated automatically by web2py
+    ## for now by id, but maybe later by device
+    log_file_name=db(db.log_files.id==request.args[0]).select().first().log_file
+
+    ## connect to the bucket where we store logfiles
+    ## boto has good docs for what get_bucket does and the other connection attributes
+    bucket=conn.get_bucket('wantsomedashboards')
+
+    ## key is what boto uses to refer to items in the bucket, in this case it is a gzip file
+    ## because I'm storing the logfiles in a folder of the bucket, the folder name is being added
+    ## manually here. 
+    ## logfile='logfiles/log_files.log_file.800bed7f7f8c2857.6d622d3235302e35354231463331455f332e6c6f672e677a.gz'
+    ## key=bucket.get_key(logfile)
+    key=bucket.get_key('logfiles/'+log_file_name)
+
+    ## Thank you unutbu
+    ## http://stackoverflow.com/questions/4204604/how-can-i-create-a-gzipfile-instance-from-the-file-like-object-that-urllib-url
+    ## I used the above link to figure out how to actually get the gzip file to behave like a normal decoded file handle in python
+    fh = gzip.GzipFile(fileobj=io.BytesIO(key.read()))
+
+    lines=fh.readlines()
+
+    return dict(lines=lines)
+
+
+
+
+
 
 
 

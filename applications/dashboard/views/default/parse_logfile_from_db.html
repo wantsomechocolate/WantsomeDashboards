@@ -1,0 +1,15 @@
+
+{{ for line in lines: }}
+	
+	<br>
+	<br>
+	Line
+	<br>
+
+	{{ for cell in line.split(','): }}
+
+		{{ =cell }}
+
+	{{ pass }}
+
+{{ pass }}
