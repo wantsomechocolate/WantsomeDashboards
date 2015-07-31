@@ -194,6 +194,10 @@ def upload_logfile():
 
                 device_fields_collect='ALL'
 
+            if device_fields_collect==None:
+
+                device_fields_collect='ALL'
+
 
 
             ## If we get passed that part, then we can move on to putting the data in Dynamo
@@ -216,7 +220,7 @@ def upload_logfile():
 
             ## The hash key is the device id! So let's start off the data dictionary (which will go into 
             ## a call to the db later) with it. 
-            data=dict(device_id=device_id)
+            # data=dict(device_id=device_id)
 
 
             ## Add the remainder of the data into the table
@@ -323,6 +327,8 @@ def upload_logfile():
 
                     else:
                         for index in device_fields_collect:
+                            if index<0:
+                                index = len(cells)+index
                             data[device_id+'__'+str(index)]=cells[int(index)]
 
 
@@ -385,6 +391,9 @@ def parse_logfile_from_db():
     import os
     import csv
 
+    import boto.dynamodb2
+    from boto.dynamodb2.table import Table
+
     ## C
     conn=boto.s3.connect_to_region(
         'us-east-1',
@@ -415,9 +424,53 @@ def parse_logfile_from_db():
     ## I used the above link to figure out how to actually get the gzip file to behave like a normal decoded file handle in python
     fh = gzip.GzipFile(fileobj=io.BytesIO(key.read()))
 
+
+    data_LOD=[]
+
     lines=fh.readlines()
 
-    return dict(lines=lines)
+    device_fields_collect=[4,-2,-1]
+    # device_fields_collect='ALL'
+
+
+    conn_dynamo=boto.dynamodb2.connect_to_region(
+        'us-east-1',
+        aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
+        aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET'],
+        )
+
+    timeseriestable = Table('timeseriestable',connection=conn_dynamo)
+
+    with timeseriestable.batch_write() as batch:
+
+        for line in lines:
+            line = line.strip()
+            cells = line.split(',')
+
+            device_id = 'TEST_3'
+            timestamp = cells[0][1:-1]
+
+            data=dict(
+                timeseriesname=device_id,
+                timestamp=timestamp,
+                )
+
+            if device_fields_collect=='ALL':
+                for index in range(len(cells)):
+                    data[device_id+'__'+str(index)]=cells[int(index)]
+
+            else:
+                for index in device_fields_collect:
+                    if index<0:
+                        index = len(cells)+index
+                    data[device_id+'__'+str(index)]=cells[int(index)]
+
+            data_LOD.append(data)
+
+            batch.put_item(data=data)
+
+
+    return locals()
 
 
 
