@@ -155,6 +155,7 @@ def upload_logfile():
             ## First thing is to save the logfile in case a false success is achieved!
             ## logfiles are stored in the log_files table
             ## At this point we already know we have a logfile in the url so.....
+            ## This will save duplicate log files :/
             db.log_files.insert(
                 device_id=device_id,
                 log_filename=log_filename,
@@ -188,8 +189,11 @@ def upload_logfile():
                 device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
 
                 ## So we have the name of the group
+                ## Now we can get the fields that we want to collect
                 device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
 
+            ## If for some reason there are not fields to get, or getting the fields causes an error
+            ## set the variable to ALL
             except:
 
                 device_fields_collect='ALL'
@@ -210,7 +214,6 @@ def upload_logfile():
                 )
 
 
-
             ## Fetch Table that keeps device info (passing in our connection object). 
             ## We are going to overwrite the current values for the device
             ## like uptime, parent DAS, etc. 
@@ -220,7 +223,7 @@ def upload_logfile():
 
             ## The hash key is the device id! So let's start off the data dictionary (which will go into 
             ## a call to the db later) with it. 
-            # data=dict(device_id=device_id)
+            data=dict(device_id=device_id)
 
 
             ## Add the remainder of the data into the table
@@ -245,7 +248,11 @@ def upload_logfile():
             ## If the mode of r is not passed in (rb in python3), then it will assume the 
             ## default type which is WRITE (I know right) and it will actually complain that 
             ## you are trying to read from a write-only file :/
+            ## I had to add the io.BytesIO wrapper around the file before giving it to 
+            ## gzip. Why? I have no idea. But I was just following this thread:
+            ## http://stackoverflow.com/questions/4204604/how-can-i-create-a-gzipfile-instance-from-the-file-like-object-that-urllib-url
             file_handle=gzip.GzipFile(fileobj=io.BytesIO(field_storage_object.file), mode='r')
+
 
 
             ## This line reads the entire contents of the file into a string. 
@@ -255,16 +262,17 @@ def upload_logfile():
             ## than the standard python 'open' construct. 
             #file_data_as_string=file_handle.read()
 
-
             ## If you don't do this, then you will have an empty line at the end of your file and get all the index errors
             ## I'm actually still getting some index errors with this included. But its likely because there was an error line?
             ## It turned out it was just blank lines
             #file_data_as_string=file_data_as_string.strip()
 
 
-            ## The file string comes in with newlines intact, split on the newlines to effectively get rows
-            #file_data_lines=file_data_as_string.split('\n')
-            file_data_lines=file_handle.readlines()
+
+            ## readlines turns the file into a list of lines in the file
+            ## for some reason I think it leaves the last newline in the last list item or something
+            ## Don't quote me on that though. 
+            lines=file_handle.readlines()
 
 
             ## Connect to the timeseries table, this table has a hash and a range key
@@ -288,18 +296,19 @@ def upload_logfile():
 
             ## So basically, look for the config info in a table called device_config?
 
+
             ## This with clause is for batch writing. 
             with timeseriestable.batch_write() as batch:
 
 
-                for row in file_data_lines:
+                for line in lines:
 
                     ## Get rid of whitespace at the beginning and end of the row
-                    row=row.strip()
+                    line=line.strip()
 
 
                     ## Seperate the 'row' into what would be cells if opened in csv or excel format
-                    cells=row.split(',')
+                    cells=line.split(',')
 
 
                     ## for testing purposes get the ts
@@ -307,15 +316,7 @@ def upload_logfile():
                     timestamp=cells[0][1:-1]
 
 
-
-
-                    # if timestamp
-
-
-                    #     try:
-                    #         ## for testing purposes get the 4th entry (which happens to be the cumulative reading for the kwh)
-                    #         # cumulative_reading=cells[4]
-
+                    ## Start of the data dictionary with the timeseriesname and the timestamp
                     data=dict(
                         timeseriesname=device_id,
                         timestamp=timestamp,
@@ -351,7 +352,7 @@ def upload_logfile():
                         )
                     db.commit()
 
-                    batch.put_item(data=data)
+                    batch.put_item(data)
 
                     # except IndexError:
                     #     ## Save the lines that counldn't be added 
@@ -467,7 +468,7 @@ def parse_logfile_from_db():
 
             data_LOD.append(data)
 
-            batch.put_item(data=data)
+            batch.put_item(data)
 
 
     return locals()
@@ -554,7 +555,7 @@ def ajax_view_aws_timeseries():
     import os, json
     from datetime import datetime
 
-    print request.vars
+    #print request.vars
 
     conn=boto.dynamodb2.connect_to_region(
         'us-east-1',
