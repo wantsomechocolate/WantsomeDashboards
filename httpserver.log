@@ -9497,3 +9497,17 @@
 127.0.0.1, 2015-07-31 21:46:23, GET, /parse_logfile_from_db/330, HTTP/1.1, 200, 1.305176
 127.0.0.1, 2015-07-31 21:47:03, GET, /parse_logfile_from_db/330, HTTP/1.1, 200, 0.763435
 127.0.0.1, 2015-07-31 21:47:41, GET, /parse_logfile_from_db/330, HTTP/1.1, 200, 0.766041
+127.0.0.1, 2015-08-01 21:54:23, GET, /, HTTP/1.1, 303, 2.514148
+127.0.0.1, 2015-08-01 21:54:24, GET, /user/login, HTTP/1.1, 200, 0.542347
+127.0.0.1, 2015-08-01 21:54:24, GET, /dashboard/static/css/jquery.dataTables.css, HTTP/1.1, 304, 0.000532
+127.0.0.1, 2015-08-01 21:54:24, GET, /dashboard/static/css/wsd_auth.css, HTTP/1.1, 304, 0.000362
+127.0.0.1, 2015-08-01 21:54:24, GET, /dashboard/static/css/wsd.css, HTTP/1.1, 304, 0.000489
+127.0.0.1, 2015-08-01 21:54:24, GET, /dashboard/static/js/jquery-1.11.1.min.js, HTTP/1.1, 304, 0.000479
+127.0.0.1, 2015-08-01 21:54:24, GET, /dashboard/static/js/jquery.dataTables.min.js, HTTP/1.1, 304, 0.000519
+127.0.0.1, 2015-08-01 21:54:24, GET, /dashboard/static/js/wsd.js, HTTP/1.1, 304, 0.000328
+127.0.0.1, 2015-08-01 21:54:25, GET, /dashboard/static/images/bat-logo.png, HTTP/1.1, 304, 0.000573
+127.0.0.1, 2015-08-01 21:54:26, GET, /ajax_graph_aws_timeseries/login, HTTP/1.1, 200, 0.791047
+127.0.0.1, 2015-08-01 21:54:27, POST, /user/login, HTTP/1.1, 303, 0.919174
+127.0.0.1, 2015-08-01 21:54:27, GET, /, HTTP/1.1, 200, 0.250573
+127.0.0.1, 2015-08-01 21:54:28, GET, /dashboard/static/images/background.jpg, HTTP/1.1, 304, 0.000526
+127.0.0.1, 2015-08-01 21:54:28, GET, /ajax_graph_aws_timeseries/, HTTP/1.1, 500, 0.470027
