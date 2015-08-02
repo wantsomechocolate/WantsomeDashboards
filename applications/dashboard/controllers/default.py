@@ -130,13 +130,15 @@ def upload_logfile():
             last_modified=datetime.now(),
             )
 
-        print "SUCCESS"
+        print "["+str(time)+"] "+"Successfully updated data for "+ str(request.vars['SERIALNUMBER'])
 
         return dict(status="SUCCESS")
 
 
     ## This means we are getting data from a device
     elif request.vars['MODE']=='LOGFILEUPLOAD':
+
+        time=datetime.now()
 
         print "["+str(time)+"] "+"Recieved a mode of "+ str(request.vars['MODE'])
 
@@ -419,6 +421,8 @@ def upload_logfile():
 
     ## If the mode is not supported
     else:
+
+        time=datetime.now()
 
         print "["+str(time)+"] "+"Recieved a MODE of "+ str(request.vars['MODE']) + ". This MODE is not supported"
 
