@@ -19,15 +19,16 @@ tst = Table('timeseriestable',connection=conn)
 
 timeseriesdata=tst.query_2(
     timeseriesname__eq='001EC600229C_2',
+    timestamp__between=['2015-07-22','2015-07-29'],
     consistent=True,
     )
 
 ##for entry in timeseriesdata:
 ##    print entry['timeseriesname'], entry['timestamp'], entry['cumulative_electric_usage_kwh']
 
-data_list=[]
-for entry in timeseriesdata:
-    data_list.append([entry['timeseriesname'],
-                      entry['timestamp'],
-                      entry['cumulative_electric_usage_kwh']]
-                     )
+##data_list=[]
+##for entry in timeseriesdata:
+##    data_list.append([entry['timeseriesname'],
+##                      entry['timestamp'],
+##                      entry['cumulative_electric_usage_kwh']]
+##                     )

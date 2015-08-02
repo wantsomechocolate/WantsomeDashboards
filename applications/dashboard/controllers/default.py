@@ -133,12 +133,17 @@ def upload_logfile():
     ## This means we are getting data from a device
     elif request.vars['MODE']=='LOGFILEUPLOAD':
 
+        print "logfile upload started!"
+
         ## Check that there is a logfile in the request
         field_storage_object=request.vars['LOGFILE']
 
 
         ## If for some reason there isn't actually a LOGFILE url variable then return failure
         if field_storage_object==None:
+
+            print "no logfile found"
+
             return dict(status="FAILURE")
 
         ## If there is a log file continue on!
@@ -149,8 +154,12 @@ def upload_logfile():
             ## Seperated by an underscore. 
             device_id=request.vars['SERIALNUMBER']+'_'+request.vars['MODBUSDEVICE']
 
+            print "the device id: "+str(device_id)
+
             ## The log_filename
             log_filename=field_storage_object.name
+
+            print "the filename is: "+str(log_filename)
 
             ## First thing is to save the logfile in case a false success is achieved!
             ## logfiles are stored in the log_files table
@@ -163,6 +172,7 @@ def upload_logfile():
                 date_added=datetime.now(),
                 )
 
+            print "logfile saved!"
 
             ## add device info locally. 
             db.device_config.update_or_insert(
@@ -171,6 +181,8 @@ def upload_logfile():
                 das_id=request.vars['SERIALNUMBER'],
                 last_modified=datetime.now(),
                 )
+
+            print "device info updated!"
 
             ## Commit changes in case errors happen before db io
             ## This saves the files to an S3 bucket
@@ -188,17 +200,25 @@ def upload_logfile():
                 ## without the dot operator at the end it would be a dictionary
                 device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
 
+                print "device field group: " + str(device_field_group)
+
                 ## So we have the name of the group
                 ## Now we can get the fields that we want to collect
                 device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
+
+                print "device fields collect" + str(device_fields_collect)
 
             ## If for some reason there are not fields to get, or getting the fields causes an error
             ## set the variable to ALL
             except:
 
+                print "there was a problem, using ALL"
+
                 device_fields_collect='ALL'
 
             if device_fields_collect==None:
+
+                print "there was a problem, using ALL"
 
                 device_fields_collect='ALL'
 
@@ -213,18 +233,20 @@ def upload_logfile():
                 aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET'],
                 )
 
+            print "created connection object"
 
             ## Fetch Table that keeps device info (passing in our connection object). 
             ## We are going to overwrite the current values for the device
             ## like uptime, parent DAS, etc. 
             table = Table('device_attributes',connection=conn)
 
-
+            print "created table object"
 
             ## The hash key is the device id! So let's start off the data dictionary (which will go into 
             ## a call to the db later) with it. 
             data=dict(device_id=device_id)
 
+            print "started data dict"
 
             ## Add the remainder of the data into the table
             ## After the hash key it doesn't matter what they are called
@@ -234,11 +256,14 @@ def upload_logfile():
                 if key!='LOGFILE':
                     data[key]=request.vars[key]
 
+            print "data dict"
+            print data
 
             ## Again, without overwrite this would throw an exception every time (but the first time)
             ## Will think of a better way to do this at some point. 
             table.put_item(data, overwrite=True)
 
+            print "just put the data into the aws table"
 
             ## The file is gzipped(even when they send naturally every 15 minutes)
             ## I can put a check in at some point, but for now its assumed. 
@@ -251,9 +276,9 @@ def upload_logfile():
             ## I had to add the io.BytesIO wrapper around the file before giving it to 
             ## gzip. Why? I have no idea. But I was just following this thread:
             ## http://stackoverflow.com/questions/4204604/how-can-i-create-a-gzipfile-instance-from-the-file-like-object-that-urllib-url
-            file_handle=gzip.GzipFile(fileobj=io.BytesIO(field_storage_object.file), mode='r')
+            file_handle=gzip.GzipFile(fileobj=io.BytesIO(field_storage_object.file.read()), mode='r')
 
-
+            print "just created the file handle"
 
             ## This line reads the entire contents of the file into a string. 
             ## I hope the files don't get too big!
@@ -274,6 +299,8 @@ def upload_logfile():
             ## Don't quote me on that though. 
             lines=file_handle.readlines()
 
+            print "just made the lines list, here is one"
+            print lines[0]
 
             ## Connect to the timeseries table, this table has a hash and a range key
             ## The hash key is the timeseries name (which I'm setting to the device ID for now)
@@ -281,7 +308,7 @@ def upload_logfile():
             ## It is close to ISO format anyway. 
             timeseriestable = Table('timeseriestable',connection=conn)
 
-
+            print "connected to time series table"
 
             ## At this point, we need to know what data we are saving from this particular device. 
             ## Acquisuites do a pretty good job of keeping things in the same order accross lines of devices etc
@@ -296,25 +323,30 @@ def upload_logfile():
 
             ## So basically, look for the config info in a table called device_config?
 
+            print "ok here goes"
 
             ## This with clause is for batch writing. 
             with timeseriestable.batch_write() as batch:
 
+                print "inside the with clause"
 
                 for line in lines:
 
                     ## Get rid of whitespace at the beginning and end of the row
                     line=line.strip()
 
+                    print line
 
                     ## Seperate the 'row' into what would be cells if opened in csv or excel format
                     cells=line.split(',')
 
+                    print cells
 
                     ## for testing purposes get the ts
                     ## the second slice is to remove the quotes that the acquisuite sends around the ts
                     timestamp=cells[0][1:-1]
 
+                    print timestamp
 
                     ## Start of the data dictionary with the timeseriesname and the timestamp
                     data=dict(
@@ -327,10 +359,13 @@ def upload_logfile():
                             data[device_id+'__'+str(index)]=cells[int(index)]
 
                     else:
-                        for index in device_fields_collect:
+                        for index in device_fields_collecdef view_awst:
                             if index<0:
                                 index = len(cells)+index
                             data[device_id+'__'+str(index)]=cells[int(index)]
+
+                    print "at this point all the fields should be added"
+                    print data
 
 
                     ## populate the context manager with our requests
@@ -352,6 +387,8 @@ def upload_logfile():
                         )
                     db.commit()
 
+                    print "I allegedly just put in some stuff to the debug table"
+
                     batch.put_item(data)
 
                     # except IndexError:
@@ -361,7 +398,12 @@ def upload_logfile():
 
             
     else:
+
+        print "mode value not supported"
+
         return dict(status='MODE value not supported')
+
+    print "SUCCESS"
 
     return dict(status="SUCCESS")
 
@@ -395,7 +437,9 @@ def parse_logfile_from_db():
     import boto.dynamodb2
     from boto.dynamodb2.table import Table
 
-    ## C
+    ## Connection object with our keys
+    ## These come from the environment which is supplied by the hosting service (heroku, beanstalk), or by the local environment
+    ## via .bashrc. Google setting environment variables in python or something for your os. 
     conn=boto.s3.connect_to_region(
         'us-east-1',
         aws_access_key_id=os.environ['AWS_WSDS3_KEY'],
