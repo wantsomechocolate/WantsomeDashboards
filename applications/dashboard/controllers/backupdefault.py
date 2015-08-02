@@ -318,7 +318,7 @@ def upload_logfile():
             ## for some reason I think it leaves the last newline in the last list item or something
             ## Don't quote me on that though. 
             lines=file_handle.readlines()
-
+            
             if len(lines)==0:
                 print "["+str(time)+"] "+"["+str(device_id)+"] "+"Lines is length 0, aborting"
                 return dict(status="FAILURE")
@@ -418,7 +418,7 @@ def upload_logfile():
                     #     db.debug_tbl.insert(error_message=str(cells), other_info=str(datetime.now()))
                     #     db.commit()
 
-        print "["+str(time)+"] "+"["+str(device_id)+"] "+"Finished adding stuff to timeseries table for this device"
+        print "["+str(time)+"] "+"["+str(device_id)+"] "+"Finished added stuff to timeseries table for this device"
 
         return dict(status="SUCCESS")
 
