@@ -4,6 +4,14 @@ $(document).ready(function() {
     var device_id=url_list[url_list.length-1]
     // alert(url_list[url_list.length-1]);
 
+
+    table_data = $.ajax({
+    	url:'ajax_get_device_field_names/'+device_id,
+    }).done(function(field_names_list){
+    	alert(JSON.parse(field_names_list));
+    })
+
+
 	$('#aws-data-table').DataTable( {
 		processing: true,
 	    serverSide: true,
@@ -14,10 +22,10 @@ $(document).ready(function() {
 	    "columns":[
 	    	{"data":"timeseriesname"},
 	    	{"data":"timestamp"},
-	    	{
-	    		"data":"cumulative_electric_usage_kwh",
-	    		"defaultContent": "",
-	    	},
+	    	// {
+	    	// 	"data":"cumulative_electric_usage_kwh",
+	    	// 	"defaultContent": "",
+	    	// },
 	    	{
 	    		"data":"001EC600229C_1__4",
 	    		"defaultContent": "",
@@ -27,19 +35,37 @@ $(document).ready(function() {
 
 
 
+	// aasdf
+	var table = $('#aws-data-table').DataTable( {
+		processing: true,
+	    serverSide: true,
+	    ajax: {
+	        url: '/ajax_view_aws_timeseries/'+device_id,
+	    },
+	} );
+
+	table.columns=table.ajax.json()['fieldnames']
+	// asdf
+
+
+
+
 	// alert(device_id);
 	graph_data = $.ajax({
 		// method:'POST',
 		url: '/ajax_graph_aws_timeseries/'+device_id,
 	}).done(function(response){
 
+		// json_response=JSON.parse(response)
+		// alert(json_response['column_names'])
+
 		var chart = c3.generate({
 			bindto:'#chart',
 		    data: {
-		        json: JSON.parse(response),
+		        json: JSON.parse(response)['data'],
 		        keys: {
 		            x: 'timestamp',
-		            value: ['cumulative_electric_usage_kwh','001EC600229C_1__4','001EC600229C_1__113']
+		            value: JSON.parse(response)['column_names'],
 		        }
 		    },
 
