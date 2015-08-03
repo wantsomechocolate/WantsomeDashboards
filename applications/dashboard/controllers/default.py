@@ -290,35 +290,27 @@ def upload_logfile():
             ## use the native gzip library to read in the gzip file 
             ## which came from the url variable, which web2py turned into a python fieldstorage object
             ## which web2py then put back into the post vars as LOGFILE.
-            ## If the mode of r is not passed in (rb in python3), then it will assume the 
-            ## default type which is WRITE (I know right) and it will actually complain that 
-            ## you are trying to read from a write-only file :/
-            ## I had to add the io.BytesIO wrapper around the file before giving it to 
-            ## gzip. Why? I have no idea. But I was just following this thread:
+            ## So I get the "value" of the field storage object which apparently gives me a string of bytes.
+            ## I give that to io.BytesIO because I saw it on this thread (thanks unutbu)
             ## http://stackoverflow.com/questions/4204604/how-can-i-create-a-gzipfile-instance-from-the-file-like-object-that-urllib-url
+            ## io.BytesIO apparently gives a file or something as "in memory bytes" whatever the difference between that and a reg file
+            ## then I let the gzip library have the file object because it is after all gzipped. 
+            ## If the fileobj argument isn't right, it won't always throw an error, but it will not behave like
+            ## a regular file object. A lot of trial and error and a crap ton of googling for this line. 
             file_handle=gzip.GzipFile(fileobj=io.BytesIO(field_storage_object.value), mode='r')
 
             print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just created the file handle"
 
-            ## This line reads the entire contents of the file into a string. 
-            ## I hope the files don't get too big!
-            ## I tried using readlines which auto chops up the lines into items of a list
-            ## BUT it gives an error, I guess gzip produces a slightly different type of file handle
-            ## than the standard python 'open' construct. 
-            #file_data_as_string=file_handle.read()
 
-            ## If you don't do this, then you will have an empty line at the end of your file and get all the index errors
-            ## I'm actually still getting some index errors with this included. But its likely because there was an error line?
-            ## It turned out it was just blank lines
-            #file_data_as_string=file_data_as_string.strip()
-
-
-
-            ## readlines turns the file into a list of lines in the file
+            ## Readlines turns the file into a list of lines in the file
             ## for some reason I think it leaves the last newline in the last list item or something
             ## Don't quote me on that though. 
             lines=file_handle.readlines()
 
+
+            ## If for some reason there are no lines in the file, then report a failure,
+            ## depending on the way you get the file, sometimes you can read through the file before
+            ## calling readlines, with will return nothing because the seek will be at the end of the file already. 
             if len(lines)==0:
                 print "["+str(time)+"] "+"["+str(device_id)+"] "+"Lines is length 0, aborting"
                 return dict(status="FAILURE")
@@ -333,19 +325,9 @@ def upload_logfile():
 
             print "["+str(time)+"] "+"["+str(device_id)+"] "+"Connected to time series table using same connection object"
 
-            ## At this point, we need to know what data we are saving from this particular device. 
-            ## Acquisuites do a pretty good job of keeping things in the same order accross lines of devices etc
-            ## What I'm going to do is assume that if I can't find a configuration for the particular DEVICE, then I 
-            ## will save all parameters related to that device. 
-            ## If there is a config file found, it will consist of a flag for include or exlcude and the columns
-            ## to include or exclude. 
-            ## So where do I keep this config information!
-            ## at the device level of course in a table that lists devices (Serialnumber_modbusaddress)
-            ## In another field it will list the flag, in a third field it will have the columns
-            ## if it fails to interpret what is placed in either field it will save all the information to dynamo
 
-            ## So basically, look for the config info in a table called device_config?
 
+            ## Begin the batch writing process, we'll hold off on picking or columns for another bit. 
             print "["+str(time)+"] "+"["+str(device_id)+"] "+"About to enter the with loop for batch writing"
 
             ## This with clause is for batch writing. 
@@ -377,6 +359,19 @@ def upload_logfile():
                         timestamp=timestamp,
                         )
 
+
+                    ## At this point, we need to know what data we are saving from this particular device. 
+                    ## Acquisuites do a pretty good job of keeping things in the same order accross lines of devices etc
+                    ## What I'm going to do is assume that if I can't find a configuration for the particular DEVICE, then I 
+                    ## will save all parameters related to that device. 
+                    ## If there is a config file found, it will consist of a flag for include or exlcude and the columns
+                    ## to include or exclude. 
+                    ## So where do I keep this config information!
+                    ## at the device level of course in a table that lists devices (Serialnumber_modbusaddress)
+                    ## In another field it will list the flag, in a third field it will have the columns
+                    ## if it fails to interpret what is placed in either field it will save all the information to dynamo
+                    ## So basically, look for the config info in a table called device_config?
+
                     if device_fields_collect=='ALL':
                         for index in range(len(cells)):
                             data[device_id+'__'+str(index)]=cells[int(index)]
@@ -390,33 +385,9 @@ def upload_logfile():
                     print "["+str(time)+"] "+"["+str(device_id)+"] "+"Data dict for timeseries table:\n"+str(data)
 
 
-                    ## populate the context manager with our requests
-                    ## when the with clause is natrually exited, the batch write request will occur. 
-                    ## This is where I should fill up the other fields by default and have mappings
-                    ## to configured names and allow user to "include only" or "exclude"
-                    # batch.put_item(data=dict(
-                    #     timeseriesname=device_id,
-                    #     timestamp=timestamp,
-                    #     cumulative_electric_usage_kwh=cumulative_reading,
-                    #     ))
-
-                    db.debug_tbl.insert(
-                        error_message=str(data),
-                        other_info=str(datetime.now()),
-                        row_text=str(line),
-                        cell_text=str(cells),
-                        timestamp_text=str(timestamp),
-                        )
-                    db.commit()
-
-                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Added stuff to debug table"
-
                     batch.put_item(data)
 
-                    # except IndexError:
-                    #     ## Save the lines that counldn't be added 
-                    #     db.debug_tbl.insert(error_message=str(cells), other_info=str(datetime.now()))
-                    #     db.commit()
+
 
         print "["+str(time)+"] "+"["+str(device_id)+"] "+"Finished adding stuff to timeseries table for this device"
 
@@ -427,12 +398,16 @@ def upload_logfile():
 
         time=datetime.now()
 
+        ## I believe this is for configuring the aquisuite if you want or something
+        ## it basically just sends the same info (actually a couple of fewer peices of info) as the STATUS mode. 
+        ## I just print to the logs that it got here and return success. 
+
         print "["+str(time)+"] "+"Recieved a MODE of "+ str(request.vars['MODE'])+"\n"
 
         for key in request.vars:
             print "["+str(time)+"] "+str(key)+"\n"+str(request.vars[key])+"\n"
 
-        return dict(status="NOT YET!")
+        return dict(status="SUCCESS")
 
     ## If the mode is not supported
     else:
@@ -637,7 +612,8 @@ def ajax_view_aws_timeseries():
     import os, json
     from datetime import datetime
 
-    #print request.vars
+
+
 
     conn=boto.dynamodb2.connect_to_region(
         'us-east-1',
@@ -656,13 +632,24 @@ def ajax_view_aws_timeseries():
         )
 
     timeserieslist=[]
+
     for entry in timeseriesdata:
-        timeserieslist.append([entry['timeseriesname'],
-                          entry['timestamp'],
-                          entry['cumulative_electric_usage_kwh']]
-                         )
+
+        data=dict()
+        for key in entry.keys():
+            data[key]=entry[key]
 
 
+
+        # timeserieslist.append(
+        #                         [
+        #                             entry['timeseriesname'],
+        #                             entry['timestamp'],
+        #                             # entry['cumulative_electric_usage_kwh']
+        #                         ]
+        #                     )
+
+        timeserieslist.append(data)
 
     items=int(request.vars['length'])
     start=int(request.vars['start'])
@@ -708,25 +695,33 @@ def ajax_graph_aws_timeseries():
         consistent=True,
         )
 
+    # timeserieslist=[]
+    # datalist=[]
+    # for entry in timeseriesdata:
+    #     if entry['timestamp'][0]=="'":
+    #         timeserieslist.append([
+    #                     entry['timeseriesname'],
+    #                     entry['timestamp'][1:-1],
+    #                     entry['cumulative_electric_usage_kwh']
+    #                     ])
+    #     else:
+    #        timeserieslist.append([
+    #                     entry['timeseriesname'],
+    #                     entry['timestamp'],
+    #                     entry['cumulative_electric_usage_kwh']
+    #                     ])
+
+    #     datalist.append(entry['cumulative_electric_usage_kwh'])
+
     timeserieslist=[]
-    datalist=[]
+
     for entry in timeseriesdata:
-        if entry['timestamp'][0]=="'":
-            timeserieslist.append([
-                        entry['timeseriesname'],
-                        entry['timestamp'][1:-1],
-                        entry['cumulative_electric_usage_kwh']
-                        ])
-        else:
-           timeserieslist.append([
-                        entry['timeseriesname'],
-                        entry['timestamp'],
-                        entry['cumulative_electric_usage_kwh']
-                        ])
 
-        datalist.append(entry['cumulative_electric_usage_kwh'])
+        data=dict()
+        for key in entry.keys():
+            data[key]=entry[key]
 
-
+        timeserieslist.append(data)
 
     # for i in range(1,len(timeserieslist)):
     #     timeserieslist[i][2]=float(timeserieslist[i][2])-float(timeserieslist[i-1][2])

@@ -10,7 +10,19 @@ $(document).ready(function() {
 	    ajax: {
 	        url: '/ajax_view_aws_timeseries/'+device_id,
 	        // type:'POST'
-	    }
+	    },
+	    "columns":[
+	    	{"data":"timeseriesname"},
+	    	{"data":"timestamp"},
+	    	{
+	    		"data":"cumulative_electric_usage_kwh",
+	    		"defaultContent": "",
+	    	},
+	    	{
+	    		"data":"001EC600229C_1__4",
+	    		"defaultContent": "",
+	    	},
+	    ]
 	} );
 
 
@@ -26,14 +38,14 @@ $(document).ready(function() {
 		    data: {
 		        json: JSON.parse(response),
 		        keys: {
-		            x: '1',
-		            value: ['2']
+		            x: 'timestamp',
+		            value: ['cumulative_electric_usage_kwh','001EC600229C_1__4','001EC600229C_1__113']
 		        }
 		    },
+
 		    axis: {
 		        x: {
 		            type: 'category',
-
 
 					tick: {
 						count:10,
@@ -46,9 +58,8 @@ $(document).ready(function() {
 		    }
 		});
 
-
-
 		return response;
+
 	});
 
 
