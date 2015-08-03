@@ -25,3 +25,7 @@ Obvius Powerscout System Total Net True Energy With Pulse Output 1			[4, -2]
 Obvius Powerscout System Total Net True Energy With Pulse Output 1 and 2 	[4, -2, -1]
 Babelbuster																	[4:]
 All Fields 																	[All]
+
+
+
+heroku logs -s app -t

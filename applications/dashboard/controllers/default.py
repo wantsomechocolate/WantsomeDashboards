@@ -423,6 +423,17 @@ def upload_logfile():
         return dict(status="SUCCESS")
 
 
+    elif request.vars['MODE']=='CONFIGFILEMANIFEST':
+
+        time=datetime.now()
+
+        print "["+str(time)+"] "+"Recieved a MODE of "+ str(request.vars['MODE'])+"\n"
+
+        for key in request.vars:
+            print "["+str(time)+"] "+str(key)+"\n"+str(request.vars[key])+"\n"
+
+        return dict(status="NOT YET!")
+
     ## If the mode is not supported
     else:
 
