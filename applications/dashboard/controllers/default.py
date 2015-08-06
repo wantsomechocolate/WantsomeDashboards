@@ -656,11 +656,68 @@ def ajax_view_aws_timeseries():
     draw=int(request.vars['draw'])
     end=start+items
 
+
+
+
+
+
+
+
+
+    time=datetime.now()
+
+    ## This and the actual field names should come from a config table
+    ## I'm seeing a table with device type, and then field index, and field name
+    fake_num_fields=114
+
+    device_id=request.args[0]
+
+    ## This says - look in db table device config for a device with id device_id, then from the records that match (should be 1), 
+    ## only select the field device_field_groups. Take the first record (again, should only be one) and give me just the value
+    ## without the dot operator at the end it would be a dictionary
+    device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
+
+    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device field group: " + str(device_field_group)
+
+    ## So we have the name of the group
+    ## Now we can get the fields that we want to collect
+    device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
+
+    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device fields collect:" + str(device_fields_collect)
+
+
+    column_names=[]
+    if device_fields_collect=='ALL':
+        for index in range(len(cells)):
+            column_name=device_id+"__"+str(index)
+            column_names.append(column_name)
+            # data[device_id+'__'+str(index)]=cells[int(index)]
+
+    else:
+        for index in device_fields_collect:
+            if index<0:
+                index = fake_num_fields+index
+            # data[device_id+'__'+str(index)]=cells[int(index)]
+            column_name=device_id+"__"+str(index)
+            column_names.append(column_name)
+
+    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Field names:\n"+str(column_names)
+
+
+
+
+
+
+
+
+
+
     data_dict=dict(
         draw=draw,
         recordsTotal=len(timeserieslist),
         recordsFiltered=len(timeserieslist),
-        data=timeserieslist[start:end]
+        data=timeserieslist[start:end],
+        # column_names=column_names,
         )
 
 
@@ -715,7 +772,20 @@ def ajax_get_device_field_names():
 
     print "["+str(time)+"] "+"["+str(device_id)+"] "+"Field names:\n"+str(column_names)
 
-    return json.dumps(column_names)
+    column_LOD=[
+            dict(data="timeseriesname"),
+            dict(data="timestamp"),
+    ]
+
+    for item in column_names:
+        column_LOD.append(
+            dict(
+                data=item,
+                defaultContent="",
+            )
+        )
+
+    return json.dumps(column_LOD)
 
 
 

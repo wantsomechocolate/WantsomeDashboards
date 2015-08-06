@@ -5,46 +5,87 @@ $(document).ready(function() {
     // alert(url_list[url_list.length-1]);
 
 
-    table_data = $.ajax({
-    	url:'ajax_get_device_field_names/'+device_id,
-    }).done(function(field_names_list){
-    	alert(JSON.parse(field_names_list));
-    })
+    // table_data = $.ajax({
+    // 	url:'ajax_get_device_field_names/'+device_id,
+    // }).done(function(field_names_list){
+    // 	alert(JSON.parse(field_names_list));
+    // })
 
 
-	$('#aws-data-table').DataTable( {
-		processing: true,
-	    serverSide: true,
-	    ajax: {
-	        url: '/ajax_view_aws_timeseries/'+device_id,
-	        // type:'POST'
-	    },
-	    "columns":[
-	    	{"data":"timeseriesname"},
-	    	{"data":"timestamp"},
-	    	// {
-	    	// 	"data":"cumulative_electric_usage_kwh",
-	    	// 	"defaultContent": "",
-	    	// },
-	    	{
-	    		"data":"001EC600229C_1__4",
-	    		"defaultContent": "",
-	    	},
-	    ]
-	} );
+	// $('#aws-data-table').DataTable( {
+	// 	processing: true,
+	//     serverSide: true,
+	//     ajax: {
+	//         url: '/ajax_view_aws_timeseries/'+device_id,
+	//         // type:'POST'
+	//     },
+	//     "columns":[
+	//     	{"data":"timeseriesname"},
+	//     	{"data":"timestamp"},
+	//     	// {
+	//     	// 	"data":"cumulative_electric_usage_kwh",
+	//     	// 	"defaultContent": "",
+	//     	// },
+	//     	{
+	//     		"data":"001EC600229C_2__4",
+	//     		"defaultContent": "",
+	//     	},
+	//     ]
+	// } );
+
+	// alert('hey');
+	$.ajax({
+	    url: '/ajax_get_device_field_names/'+device_id,
+	    dataType: "json",
+	})
+		.done( function ( json ) {
+			// alert(json);
+	    	// alert('hey');
+	        var table = $('#aws-data-table').dataTable( {
+				processing: true,
+			    serverSide: true,
+			 	ajax:'/ajax_view_aws_timeseries/'+device_id,
+			 	// "data": json['data'],
+				"columns":json
+
+			});
+
+	    });
 
 
 
 	// aasdf
-	var table = $('#aws-data-table').DataTable( {
-		processing: true,
-	    serverSide: true,
-	    ajax: {
-	        url: '/ajax_view_aws_timeseries/'+device_id,
-	    },
-	} );
+	// var table = $('#aws-data-table').DataTable( {
+	// 	processing: true,
+	//     serverSide: true,
+	//     ajax:'/ajax_view_aws_timeseries/'+device_id,
+	//     // ajax: {
+	//     //     url: '/ajax_view_aws_timeseries/'+device_id,
+	//     // },
+	//     // columns:[],
+	// } );
 
-	table.columns=table.ajax.json()['fieldnames']
+	// table.on('xhr', function(){
+	// 	var json = table.ajax.json();
+	// 	// alert( json.data.length +' row(s) were loaded' );
+	// 	// alert( json );
+	// 	alert( json['column_names']);
+	// 	table["columns"]=[
+	//     	{"data":"timeseriesname"},
+	//     	{"data":"timestamp"},
+	//     	{
+	//     		"data":"cumulative_electric_usage_kwh",
+	//     		"defaultContent": "",
+	//     	},
+	//     	{
+	//     		"data":"001EC600229C_1__4",
+	//     		"defaultContent": "",
+	//     	},
+	//     ]
+		
+	// });
+
+	// table.columns=table.ajax.json()['fieldnames']
 	// asdf
 
 
