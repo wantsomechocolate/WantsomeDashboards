@@ -773,8 +773,8 @@ def ajax_get_device_field_names():
     print "["+str(time)+"] "+"["+str(device_id)+"] "+"Field names:\n"+str(column_names)
 
     column_LOD=[
-            dict(data="timeseriesname"),
-            dict(data="timestamp"),
+            dict(data="timeseriesname",title='DEVICE ID'),
+            dict(data="timestamp", title='TIMESTAMP'),
     ]
 
     for item in column_names:
@@ -782,6 +782,7 @@ def ajax_get_device_field_names():
             dict(
                 data=item,
                 defaultContent="",
+                title=item,
             )
         )
 
@@ -915,7 +916,8 @@ def d3play():
     return dict()
 
 def device():
-    return dict()
+    device_id=request.args[0]
+    return dict(device_id=device_id)
 
 
 def success():
