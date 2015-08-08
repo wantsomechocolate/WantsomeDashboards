@@ -29,3 +29,27 @@ All Fields 																	[All]
 
 
 heroku logs -s app -t
+
+
+
+https://datatables.net/forums/discussion/413/expand-and-collapse-rows
+http://datatables.net/examples/api/row_details.html
+http://datatables.net/examples/api/select_row.html
+
+
+
+AWS DB plugin
+datatables has searching, sorting, filtering
+to limit calls I want searching to be triggered w/ enter or btn
+
+db(db.table.fieldname='querytext').select()
+
+there is a slight difference however where dynamo allows arbitrary name/alue paris. How to handel that?
+
+one way: constantly manage a list in the regular db that is the unique fields (name in name/value) and maybe some info on the upper and lower bound data for each field
+
+pros not sure cons lots of everhead kinf of complicated
+
+another way: for any table have a set of core fields. For each item, map their fields to the core fields and then show the other information in a group below each record.
+
+make sure if there are no additional fields, that there is no controls for collapsing and expanding the additional information!

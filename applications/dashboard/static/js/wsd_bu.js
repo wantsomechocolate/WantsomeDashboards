@@ -120,53 +120,56 @@ $(document).ready(function() {
 	// General Code for Viewing AWS data in datatables
 	// ###############################################
 
-	if (url_list[1]==='aws_table') {
-
-		var table_name=url_list[2]
-
-		alert('made it');
-		alert(table_name);
-
-		table_data=$.ajax({
-
-		    url: '/ajax_aws_table/'+table_name,
-		    dataType: "json",
-
-		}) // end ajax call to set up table
-
-			.done( function ( json ) {
-
-			    var table = $('#aws_table').DataTable( {
-			        data: json['data'],
-			        columns: json['columns'],
-			        order: [[1, 'asc']]
-			    } );
-
-			    // Add event listener for opening and closing details
-			    $('#aws_table tbody').on('click', 'td.details-control', function () {
-			        var tr = $(this).closest('tr');
-			        var row = table.row( tr );
-			 
-			        if ( row.child.isShown() ) {
-			            // This row is already open - close it
-			            row.child.hide();
-			            tr.removeClass('shown');
-			        }
-			        else {
-			            // Open this row
-			            row.child( format(row.data()) ).show();
-			            tr.addClass('shown');
-			        }
-
-			    } ); // end on event for collapse controls
-
-			}); // end done section for ajax call to setup table
-
-
-
-
+    var table = $('#example').DataTable( {
+        ajax: "/ajax_das_list",
+        columns: [
+            {
+                "className":      'details-control',
+                "orderable":      false,
+                "data":           null,
+                "defaultContent": '',
+            },
+            { 
+            	"data": "LOOPNAME",
+            	"defaultContent": '',
+            },
+            { 
+            	"data": "serial_number",
+            },
+            { 
+            	"data": "UPTIME",
+            	"defaultContent": '',
+            },
+            { 
+            	"data": "ACQUISUITEVERSION",
+            	"defaultContent": '',
+            },
+        ],
+        order: [[1, 'asc']]
+    } );
+     
+    // Add event listener for opening and closing details
+    $('#example tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row( tr );
  
-	}; // end if clause for checking if page name is aws_table
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( format(row.data()) ).show();
+            tr.addClass('shown');
+        }
+    } );
+
+
+
+
+
+
 
 
 

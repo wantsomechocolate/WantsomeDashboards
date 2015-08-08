@@ -531,7 +531,126 @@ def parse_logfile_from_db():
     return locals()
 
 
+def aws_table():
+    table_name=request.args[0]
+    return dict(table_name=table_name)
 
+def ajax_aws_table():
+    import json
+    from wantsome import aws_get_table
+
+    table_name=request.args[0]
+    # table_name='das_attributes'
+
+    table=aws_get_table(table_name)
+    all_entries=list(table.scan())
+    data_dict=dict()
+    data_LOD=[]
+
+    for record in all_entries:
+        record_dict=dict()
+        for name_value_pair in record.items():
+            record_dict[name_value_pair[0]]=name_value_pair[1]
+        data_LOD.append(record_dict)
+    data_dict['data']=data_LOD
+
+    data_dict['columns']=[
+            {
+                "className":      'details-control',
+                "orderable":      False,
+                "data":           None,
+                "defaultContent": '',
+            },
+            { 
+                "data": "LOOPNAME",
+                "defaultContent": '',
+            },
+            { 
+                "data": "serial_number",
+            },
+            { 
+                "data": "UPTIME",
+                "defaultContent": '',
+            },
+            { 
+                "data": "ACQUISUITEVERSION",
+                "defaultContent": '',
+            },
+        ]
+
+    return json.dumps(data_dict)
+
+def das_list():
+
+    ## The plan for makeing db interface with aws
+    ## retrieve the table with the thing I just made
+    ## with no arguments return a list of dictionaries of all records using scan
+    ## optional sort arguments should be available
+
+    ## If there are query parameters, use query instead, again optional sorting available?
+
+    ## Once the data is retrieved I need a function for converting the data to an html table 
+    ## for use with datatables
+
+    ## The thing is, I want to be able to view all DAS at once,  but some DAS I imagine will have different fields
+    ## So what I need to do is have a mapping from each DAS to a set of core fields
+    ## I show the core fields and then a collapsable dropdown that shows the remaining fields. 
+
+    ## This requires inferring the DAS type from the fields available
+    ## Then get the most recent field mapping from the db for that DAS type
+
+    ## There will be a list of the core fields, the db mapping will have those core fields (or not)
+    ## and as the data is parse it will be added with the core field name rather than the original name
+    ## In the header I can put the original name in parens or something
+
+    ##
+
+        # from datetime import datetime
+    from wantsome import aws_get_table
+
+    table=aws_get_table('das_attributes')
+
+    all_entries=list(table.scan())
+
+    ## What are the core fields for a DAS?
+    ## Lets just say they are:
+    ## Serial Number
+    ## Uptime
+    ## Firmware Version
+
+    ## For an Acquisuite these would map to:
+    ## serial_number
+    ## UPTIME
+    ## ACQUISUITEVERSION
+    ##
+
+    ## The remaining fields would be in the additional info section
+
+
+
+
+    data_dict=dict()
+
+    data_LOD=[]
+
+    for record in all_entries:
+        record_dict=dict()
+        for name_value_pair in record.items():
+            record_dict[name_value_pair[0]]=name_value_pair[1]
+        data_LOD.append(record_dict)
+
+    data_dict['data']=data_LOD
+
+    print data_dict
+
+
+    # html_table=TABLE(_id='aws_db_table', _class='display', _cellspacing='0', _width='100%')
+
+
+    # html_table2=TABLE(*[TR(*rows) for rows in table])
+
+
+    return dict(all_entries=all_entries, data_dict=data_dict)
 
 
 
@@ -959,3 +1078,10 @@ def das_test():
     # list[int(slice[:slice.index(':')]):int(slice[slice.index(':')+1:])]
 
     return dict(var1=device_field_group, var2=device_fields_collect)
+
+
+
+
+def child_rows():
+    return dict()
+

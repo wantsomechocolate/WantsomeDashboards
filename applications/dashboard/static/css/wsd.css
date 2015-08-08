@@ -41,3 +41,12 @@ td{
 .wsd-toggle{
  	background-image: linear-gradient(to bottom,#2E2E2E 0,#3C3C3C 100%) !important;
 }
+
+
+td.details-control {
+    background: url('../images/details_open.png') no-repeat center center;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background: url('../images/details_close.png') no-repeat center center;
+}
