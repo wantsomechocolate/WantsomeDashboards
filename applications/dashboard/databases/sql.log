@@ -647,3 +647,19 @@ ALTER TABLE debug_tbl ADD timestamp_text TEXT;
 timestamp: 2015-07-29T22:36:10.419008
 ALTER TABLE debug_tbl ADD row_text TEXT;
 success!
+timestamp: 2015-08-09T10:55:28.127925
+CREATE TABLE aws_core_columns(
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(512),
+    core CHAR(1),
+    data VARCHAR(512),
+    defaultContent VARCHAR(512),
+    title VARCHAR(512)
+);
+success!
+timestamp: 2015-08-09T11:44:45.985148
+ALTER TABLE aws_core_columns ADD column_order INTEGER;
+success!
+timestamp: 2015-08-09T14:10:16.358848
+ALTER TABLE aws_core_columns ADD width VARCHAR(512);
+success!

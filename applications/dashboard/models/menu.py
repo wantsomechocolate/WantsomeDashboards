@@ -40,7 +40,7 @@ def _():
     ctr = request.controller
     # useful links to internal and external resources
     response.menu += [
-        (T('Admin'), False, '#', [
+        (T('ADMIN'), False, '#', [
 
           (T('Admin'), False, URL('admin','site','index')),
 
@@ -50,13 +50,13 @@ def _():
 
         ]),
 
-        (T('Pages'), False, '#', [
+        (T('AWS DB'), False, '#', [
 
-          (T('View DAQ Info'), False, URL('das_list')),
+          (T('View DAQ Info'), False, URL('aws_table', args=['das_attributes'])),
 
           LI(_class="divider"),
 
-          (T('View Device Info'), False, URL('device_list')),
+          (T('View Device Info'), False, URL('aws_table', args=['device_attributes'])),
 
           LI(_class="divider"),
 

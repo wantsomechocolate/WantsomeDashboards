@@ -115,3 +115,18 @@ db.arbitrary_field_groups.add_or_subtract.requires=IS_IN_SET(('add','subtract'))
 
 db.arbitrary_field_groups.das_id.requires=IS_IN_DB(db,'das_config.das_id')
 db.arbitrary_field_groups.device_id.requires=IS_IN_DB(db,'device_config.device_id')
+
+
+
+
+
+db.define_table('aws_core_columns',
+	Field('table_name'),
+	Field('core','boolean'),
+	# Field('equipment_type'),
+	Field('data'),
+	Field('defaultContent'),
+	Field('title'),
+	Field('column_order','integer'),
+	Field('width'),
+	)

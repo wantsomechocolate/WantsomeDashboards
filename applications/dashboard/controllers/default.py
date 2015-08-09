@@ -542,43 +542,100 @@ def ajax_aws_table():
     table_name=request.args[0]
     # table_name='das_attributes'
 
+    core_columns_db=db(db.aws_core_columns.table_name==table_name).select(orderby='column_order')
+
+
+    core_columns=core_columns_db.as_list()
+
+
+    # core_columns=[
+
+    #     dict(
+    #         table_name='das_attributes',
+    #         core=True,
+
+    #         data='serial_number',
+    #         defaultContent='',
+    #         title='Serial Number',
+    #         ),
+
+    #     dict(
+    #         table_name='das_attributes',
+    #         core=True,
+
+    #         data='LOOPNAME',
+    #         defaultContent='',
+    #         title='Name',
+    #         ),
+
+    #     dict(
+    #         table_name='das_attributes',
+    #         core=True,
+
+    #         data='UPTIME',
+    #         defaultContent='',
+    #         title='Uptime (seconds)',
+    #         ),
+
+    #     dict(
+    #         table_name='das_attributes',
+    #         core=True,
+
+    #         data='ACQUISUITEVERSION',
+    #         defaultContent='',
+    #         title='Firmware Version',
+    #         )
+
+    #     ]
+
+
+
+    collapse_expand=dict(
+        className='details-control',
+        orderable=False,
+        data=None,
+        defaultContent='',
+        )
+
+
+    columns_LOD=core_columns
+
+    columns_LOD.insert(0,collapse_expand)
+
+
+
+
+
     table=aws_get_table(table_name)
+
     all_entries=list(table.scan())
+
     data_dict=dict()
+
     data_LOD=[]
 
     for record in all_entries:
+
         record_dict=dict()
+
         for name_value_pair in record.items():
+
             record_dict[name_value_pair[0]]=name_value_pair[1]
+
         data_LOD.append(record_dict)
+        
     data_dict['data']=data_LOD
 
-    data_dict['columns']=[
-            {
-                "className":      'details-control',
-                "orderable":      False,
-                "data":           None,
-                "defaultContent": '',
-            },
-            { 
-                "data": "LOOPNAME",
-                "defaultContent": '',
-            },
-            { 
-                "data": "serial_number",
-            },
-            { 
-                "data": "UPTIME",
-                "defaultContent": '',
-            },
-            { 
-                "data": "ACQUISUITEVERSION",
-                "defaultContent": '',
-            },
-        ]
+    data_dict['columns']=columns_LOD
 
     return json.dumps(data_dict)
+
+
+
+
+
+
+
 
 def das_list():
 

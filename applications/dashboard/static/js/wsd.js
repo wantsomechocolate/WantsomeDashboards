@@ -1,17 +1,49 @@
 
 
 /* Formatting function for row details - modify as you need */
-function format ( d ) {
+function format ( d, columns ) {
 
     // `d` is the original data object for the row
+    // 'columns' is the column information including title, data (name of key in data dictionary), wether its a core value or not, etc.
 
+    // Populate a list of all the fields that are considered core, remember this is being done on a single row!
+    var core_fields=[]
+
+    // Cycle through the columns list (exclude the first one because it is the column for the collapse expand controls)
+    for (i=1;i<columns.length;i++) {
+
+    	// if the column is labelled as a core column, that means it should already be in the main column tables
+    	// This is excluding those columns and only showing additional information
+    	if (columns[i]['core']===true){
+    		core_fields.push(columns[i]['data'])
+    	}
+	    	// for (property in columns[i]){
+	    	// 	alert(property+' '+columns[i][property]);
+	    	// }
+    }
+
+    // Begin making the html to show the extra information
 	child_rows='<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'
 
+	// for each property in the record being clicked
 	for (property in d){
 		// alert(property+' '+d[property]);
-		child_rows+='<tr>'+'<td>'+property+':</td>'+'<td>'+d[property]+'</td>'+'</tr>'
+
+		// if the property is not a core field, aka if the property can not be found in the list of core fields
+		// (indexOf returns -1 if not match is found)
+		if (core_fields.indexOf(property)===-1){
+
+			// Then add a row to the additional info table
+			child_rows+='<tr>'+'<td>'+property+':</td>'+'<td>'+d[property]+'</td>'+'</tr>'
+
+		}
 	}
 
+	if (d.serial_number!==null){
+		child_rows
+	}
+
+	// complete the table for additional information
 	child_rows+='</table>';
 
     return child_rows
@@ -124,8 +156,8 @@ $(document).ready(function() {
 
 		var table_name=url_list[2]
 
-		alert('made it');
-		alert(table_name);
+		// alert('made it');
+		// alert(table_name);
 
 		table_data=$.ajax({
 
@@ -135,6 +167,8 @@ $(document).ready(function() {
 		}) // end ajax call to set up table
 
 			.done( function ( json ) {
+
+				// alert(json['data']);
 
 			    var table = $('#aws_table').DataTable( {
 			        data: json['data'],
@@ -154,7 +188,7 @@ $(document).ready(function() {
 			        }
 			        else {
 			            // Open this row
-			            row.child( format(row.data()) ).show();
+			            row.child( format( row.data(), json['columns'] ) ).show();
 			            tr.addClass('shown');
 			        }
 

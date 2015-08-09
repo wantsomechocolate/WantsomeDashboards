@@ -1,3 +1,9 @@
 .auth-header{
 	text-align: center;
 }
+
+
+#appadmin th, #appadmin td {
+	padding-left: 20px;
+	padding-right:20px;
+}
