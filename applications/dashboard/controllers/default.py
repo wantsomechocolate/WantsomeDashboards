@@ -1082,7 +1082,7 @@ def ajax_graph_aws_timeseries():
 
     #return dict(timeserieslist=timeserieslist)
     # print json.dumps(data_dict)
-    return json.dumps(dict(column_names=column_names, data=timeserieslist[-100:]))
+    return json.dumps(dict(column_names=column_names, data=timeserieslist[-500:]))
     # return json.dumps(data_dict)
 
 

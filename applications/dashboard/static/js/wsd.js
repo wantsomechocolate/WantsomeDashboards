@@ -107,7 +107,12 @@ $(document).ready(function() {
 			        keys: {
 			            x: 'timestamp',
 			            value: JSON.parse(response)['column_names'],
-			        }
+			        },
+
+					selection: {
+						draggable: true
+					}
+
 			    },
 
 			    axis: {
@@ -120,7 +125,13 @@ $(document).ready(function() {
 						},
 						height: 130
 			        }
-			    }
+			    },
+
+
+			    zoom: {
+			        enabled: true
+			    },
+
 			});
 
 			return response;
