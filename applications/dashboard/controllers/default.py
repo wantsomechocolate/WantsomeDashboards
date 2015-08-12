@@ -77,13 +77,22 @@ def upload_logfile():
     from boto.dynamodb2.table import Table
 
 
+    debug_level=2
+
+    ERROR=0
+    NORMAL=1
+    INFO=2
+    DEBUG=3
+
 
     ## This means that its sending acquisuite info - not device info
     if request.vars['MODE']=='STATUS':
 
         time=datetime.now()
 
-        print "["+str(time)+"] "+"Recieved a mode of "+ str(request.vars['MODE'])
+        if debug_level>=NORMAL:
+
+            print "["+str(time)+"] "+"Recieved a mode of "+ str(request.vars['MODE'])
 
         ## Connect to Dynamo
         conn=boto.dynamodb2.connect_to_region(
@@ -130,7 +139,10 @@ def upload_logfile():
             last_modified=datetime.now(),
             )
 
-        print "["+str(time)+"] "+"Successfully updated data for "+ str(request.vars['SERIALNUMBER'])
+
+        if debug_level>=NORMAL:
+
+            print "["+str(time)+"] "+"Successfully updated data for "+ str(request.vars['SERIALNUMBER'])
 
         return dict(status="SUCCESS")
 
@@ -140,9 +152,11 @@ def upload_logfile():
 
         time=datetime.now()
 
-        print "["+str(time)+"] "+"Recieved a mode of "+ str(request.vars['MODE'])
+        if debug_level>=NORMAL:
+            print "["+str(time)+"] "+"Recieved a mode of "+ str(request.vars['MODE'])
 
-        print "["+str(time)+"] "+"Logfile upload started!"
+        if debug_level>=DEBUG:
+            print "["+str(time)+"] "+"Logfile upload started!"
 
         ## Check that there is a logfile in the request
         field_storage_object=request.vars['LOGFILE']
@@ -151,7 +165,8 @@ def upload_logfile():
         ## If for some reason there isn't actually a LOGFILE url variable then return failure
         if field_storage_object==None:
 
-            print "["+str(time)+"] "+"No logfile found"
+            if debug_level>=INFO:
+                print "["+str(time)+"] "+"No logfile found"
 
             return dict(status="FAILURE")
 
@@ -163,13 +178,15 @@ def upload_logfile():
             ## Seperated by an underscore. 
             device_id=request.vars['SERIALNUMBER']+'_'+request.vars['MODBUSDEVICE']
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+ "Device ID found"
+            if debug_level>=INFO:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+ "Device ID found"
 
 
             ## The log_filename
             log_filename=field_storage_object.name
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"The filename is: "+str(log_filename)+". As always."
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"The filename is: "+str(log_filename)+". As always."
 
             ## First thing is to save the logfile in case a false success is achieved!
             ## logfiles are stored in the log_files table
@@ -182,7 +199,8 @@ def upload_logfile():
                 date_added=datetime.now(),
                 )
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Logfile saved!"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Logfile saved!"
 
             ## add device info locally. 
             db.device_config.update_or_insert(
@@ -192,7 +210,8 @@ def upload_logfile():
                 last_modified=datetime.now(),
                 )
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device info updated!"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device info updated!"
 
             ## Commit changes in case errors happen before db io
             ## This saves the files to an S3 bucket
@@ -214,20 +233,23 @@ def upload_logfile():
                 aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET'],
                 )
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Created connection object"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Created connection object"
 
             ## Fetch Table that keeps device info (passing in our connection object). 
             ## We are going to overwrite the current values for the device
             ## like uptime, parent DAS, etc. 
             table = Table('device_attributes',connection=conn)
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Connected to device attributes table"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Connected to device attributes table"
 
             ## The hash key is the device id! So let's start off the data dictionary (which will go into 
             ## a call to the db later) with it. 
             data=dict(device_id=device_id)
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Started data dict for device attributes table"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Started data dict for device attributes table"
 
             ## Add the remainder of the data into the table
             ## After the hash key it doesn't matter what they are called
@@ -237,19 +259,21 @@ def upload_logfile():
                 if key!='LOGFILE':
                     data[key]=request.vars[key]
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Now printing the current state of the data dict for device attributes\n"+str(data)
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Now printing the current state of the data dict for device attributes\n"+str(data)
 
             ## Again, without overwrite this would throw an exception every time (but the first time)
             ## Will think of a better way to do this at some point. 
             table.put_item(data, overwrite=True)
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just updated the device attributes table in aws"
-
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just updated the device attributes table in aws"
 
 
             ## now we are ready to deal with the actual data 
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Beginning the process of saving the interval data"
+            if debug_level>=INFO:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Beginning the process of saving the interval data"
 
             try:
                 ## Now get what fields you want to collect
@@ -259,25 +283,29 @@ def upload_logfile():
                 ## without the dot operator at the end it would be a dictionary
                 device_field_group = db(db.device_config.device_id==device_id).select(db.device_config.device_field_groups).first().device_field_groups
 
-                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device field group: " + str(device_field_group)
+                if debug_level>=DEBUG:
+                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device field group: " + str(device_field_group)
 
                 ## So we have the name of the group
                 ## Now we can get the fields that we want to collect
                 device_fields_collect = db(db.device_field_groups.field_group_name==device_field_group).select().first().field_group_columns
 
-                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device fields collect:" + str(device_fields_collect)
+                if debug_level>=DEBUG:
+                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Device fields collect:" + str(device_fields_collect)
 
             ## If for some reason there are not fields to get, or getting the fields causes an error
             ## set the variable to ALL
             except:
 
-                print "["+str(time)+"] "+"["+str(device_id)+"] "+"There was a problem, using ALL instead"
+                if debug_level>=ERROR:
+                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"There was a problem, using ALL instead"
 
                 device_fields_collect='ALL'
 
             if device_fields_collect==None:
 
-                print "["+str(time)+"] "+"["+str(device_id)+"] "+"There was a problem, using ALL instead"
+                if debug_level>=ERROR:
+                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"There was a problem, using ALL instead"
 
                 device_fields_collect='ALL'
 
@@ -299,7 +327,8 @@ def upload_logfile():
             ## a regular file object. A lot of trial and error and a crap ton of googling for this line. 
             file_handle=gzip.GzipFile(fileobj=io.BytesIO(field_storage_object.value), mode='r')
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just created the file handle"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just created the file handle"
 
 
             ## Readlines turns the file into a list of lines in the file
@@ -312,7 +341,9 @@ def upload_logfile():
             ## depending on the way you get the file, sometimes you can read through the file before
             ## calling readlines, with will return nothing because the seek will be at the end of the file already. 
             if len(lines)==0:
-                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Lines is length 0, aborting"
+
+                if debug_level>=ERROR:
+                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Lines is length 0, aborting"
                 return dict(status="FAILURE")
 
             print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just made the lines list"
@@ -323,35 +354,41 @@ def upload_logfile():
             ## It is close to ISO format anyway. 
             timeseriestable = Table('timeseriestable',connection=conn)
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Connected to time series table using same connection object"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Connected to time series table using same connection object"
 
 
 
             ## Begin the batch writing process, we'll hold off on picking or columns for another bit. 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"About to enter the with loop for batch writing"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"About to enter the with loop for batch writing"
 
             ## This with clause is for batch writing. 
             with timeseriestable.batch_write() as batch:
 
-                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Inside the with clause"
+                if debug_level>=DEBUG2:
+                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Inside the with clause"
 
                 for line in lines:
 
                     ## Get rid of whitespace at the beginning and end of the row
                     line=line.strip()
 
-                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Line:\n"+str(line)
+                    if debug_level>=DEBUG2:
+                        print "["+str(time)+"] "+"["+str(device_id)+"] "+"Line:\n"+str(line)
 
                     ## Seperate the 'row' into what would be cells if opened in csv or excel format
                     cells=line.split(',')
 
-                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Cells:\n"+str(cells)
+                    if debug_level>=DEBUG2:
+                        print "["+str(time)+"] "+"["+str(device_id)+"] "+"Cells:\n"+str(cells)
 
                     ## for testing purposes get the ts
                     ## the second slice is to remove the quotes that the acquisuite sends around the ts
                     timestamp=cells[0][1:-1]
 
-                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Timestamp:\n"+timestamp
+                    if debug_level>=DEBUG2:
+                        print "["+str(time)+"] "+"["+str(device_id)+"] "+"Timestamp:\n"+timestamp
 
                     ## Start of the data dictionary with the timeseriesname and the timestamp
                     data=dict(
@@ -382,14 +419,18 @@ def upload_logfile():
                                 index = len(cells)+index
                             data[device_id+'__'+str(index)]=cells[int(index)]
 
-                    print "["+str(time)+"] "+"["+str(device_id)+"] "+"Data dict for timeseries table:\n"+str(data)
+                    if debug_level>=DEBUG2:
+                        print "["+str(time)+"] "+"["+str(device_id)+"] "+"Data dict for timeseries table:\n"+str(data)
 
 
                     batch.put_item(data)
 
 
+        if debug_level>=DEBUG:
+            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Finished adding stuff to timeseries table for this device"
 
-        print "["+str(time)+"] "+"["+str(device_id)+"] "+"Finished adding stuff to timeseries table for this device"
+        if debug_level>=INFO:
+            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Successfully updated Device: "+str(device_id)
 
         return dict(status="SUCCESS")
 
@@ -402,10 +443,15 @@ def upload_logfile():
         ## it basically just sends the same info (actually a couple of fewer peices of info) as the STATUS mode. 
         ## I just print to the logs that it got here and return success. 
 
-        print "["+str(time)+"] "+"Recieved a MODE of "+ str(request.vars['MODE'])+"\n"
+        if debug_level>=INFO:
+            print "["+str(time)+"] "+"Recieved a MODE of "+ str(request.vars['MODE'])+"\n"
 
         for key in request.vars:
-            print "["+str(time)+"] "+str(key)+"\n"+str(request.vars[key])+"\n"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+str(key)+"\n"+str(request.vars[key])+"\n"
+
+        if debug_level>=INFO:
+            print "["+str(time)+"] "+"Successfully Looped through url variables"+"\n"
 
         return dict(status="SUCCESS")
 
@@ -413,8 +459,19 @@ def upload_logfile():
     else:
 
         time=datetime.now()
+        if request.vars['MODE']:
 
-        print "["+str(time)+"] "+"Recieved a MODE of "+ str(request.vars['MODE']) + ". This MODE is not supported"
+            if debug_level>=ERROR:
+                print "["+str(time)+"] "+"Recieved a MODE of "+ str(request.vars['MODE']) + ". This MODE is not supported. No SUCCESS returned."
+
+        else: 
+
+            if debug_level>=ERROR:
+                print "["+str(time)+"] "+"Recieved a request with no mode variable. No SUCCESS returned."
+
+                for key in request.vars:
+                    if debug_level>=ERROR:
+                        print "["+str(time)+"] "+str(key)+"\n"+str(request.vars[key])+"\n"
 
         return dict(status='MODE value not supported')
 
@@ -1082,7 +1139,7 @@ def ajax_graph_aws_timeseries():
 
     #return dict(timeserieslist=timeserieslist)
     # print json.dumps(data_dict)
-    return json.dumps(dict(column_names=column_names, data=timeserieslist[-500:]))
+    return json.dumps(dict(column_names=column_names, data=timeserieslist[-250:]))
     # return json.dumps(data_dict)
 
 
