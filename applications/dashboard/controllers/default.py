@@ -83,6 +83,7 @@ def upload_logfile():
     NORMAL=1
     INFO=2
     DEBUG=3
+    DEBUG2=4
 
 
     ## This means that its sending acquisuite info - not device info
@@ -313,8 +314,9 @@ def upload_logfile():
 
 
 
-            ## The file is gzipped(even when they send naturally every 15 minutes)
-            ## I can put a check in at some point, but for now its assumed. 
+            ## The file is gzipped(even when they send naturally every 15 minutes) Actually it might not be. 
+            ## I need to put in a check, but how!
+            
             ## use the native gzip library to read in the gzip file 
             ## which came from the url variable, which web2py turned into a python fieldstorage object
             ## which web2py then put back into the post vars as LOGFILE.
@@ -346,7 +348,8 @@ def upload_logfile():
                     print "["+str(time)+"] "+"["+str(device_id)+"] "+"Lines is length 0, aborting"
                 return dict(status="FAILURE")
 
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just made the lines list"
+            if debug_level>=DEBUG:
+                print "["+str(time)+"] "+"["+str(device_id)+"] "+"Just made the lines list"
 
             ## Connect to the timeseries table, this table has a hash and a range key
             ## The hash key is the timeseries name (which I'm setting to the device ID for now)
@@ -430,7 +433,7 @@ def upload_logfile():
             print "["+str(time)+"] "+"["+str(device_id)+"] "+"Finished adding stuff to timeseries table for this device"
 
         if debug_level>=INFO:
-            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Successfully updated Device: "+str(device_id)
+            print "["+str(time)+"] "+"["+str(device_id)+"] "+"Successfully updated device"
 
         return dict(status="SUCCESS")
 
