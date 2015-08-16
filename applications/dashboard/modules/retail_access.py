@@ -1,26 +1,8 @@
-    
-def aws_get_table(table_name):
-    import boto.dynamodb2
-    from boto.dynamodb2.table import Table
-    import os
-    	# from datetime import datetime
-
-    conn=boto.dynamodb2.connect_to_region(
-        'us-east-1',
-        aws_access_key_id=os.environ['AWS_DYNAMO_KEY'],
-        aws_secret_access_key=os.environ['AWS_DYNAMO_SECRET']
-        )
-
-    table = Table(table_name,connection=conn)
-
-    return table
-
-
 def coned_ra_elec(account_number):
 
     from selenium import webdriver
 
-    #account_number='494111110330006'
+    ##account_number='494111110330006'
 
     ## Use phantom to run in background
     driver = webdriver.PhantomJS()
@@ -83,9 +65,9 @@ def coned_ra_elec(account_number):
     headers=monthly_data_table.find_elements_by_tag_name('th')
     header_list=[]
     for header in headers:
-    ##  header_text = header.text
-    ##  header_text = header_text.replace(' ','_')
-    ##  header_text = header_text.lower()
+    ##	header_text = header.text
+    ##	header_text = header_text.replace(' ','_')
+    ##	header_text = header_text.lower()
             header_list.append(header.text)
 
 
@@ -116,3 +98,24 @@ def coned_ra_elec(account_number):
     return data
 
 data=coned_ra_elec('494111110330006')
+
+
+
+
+
+
+# Property	Name	Account Number	User Name
+# 5209	DAVAL 36 ASSOCIATES	43-5121-5256-0000-2	520900002
+# 5211	DAVAL 37 ASSOCIATES	44-2001-0422-0001-8	521100018
+# 5215	WALBER 39 COMPANY L.P.	49-4122-3287-4000-1	521540001
+# 5318	BBC 34 CO.	41-1037-8025-0000-4	531800004
+# 5334	FORTUSA REALTY CORP	49-4053-6086-1000-4	533410004
+# 5335	WALBER 419 CO & 419 PARK AVE.	49-4152-6240-1000-7	533510007
+# 5341	18 EAST 41ST STREET	49-4192-4165-5002-6	534150026
+# 5350	WALSAM TWENTY-NINE COMPANY	49-4102-3132-0000-5	5350200005
+# 5350	WALSAM TWENTY-NINE COMPANY	49-4102-3133-0000-3	535000003
+# 5500	500 EIGHTH AVE. L.L.C.	49-4112-3086-9300-7	550093007
+# 5500	500 EIGHTH AVE. L.L.C.	49-4111-1103-3000-6	550030006
+# 5500	500 EIGHTH AVE. L.L.C.	49-4112-3086-9100-1	550091001
+# 5500	500 EIGHTH AVE. L.L.C.	49-4112-3086-9200-9	550092009
+# 6210	36 LLC	49-4111-0228-0000-5	621000005

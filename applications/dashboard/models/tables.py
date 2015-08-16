@@ -130,3 +130,16 @@ db.define_table('aws_core_columns',
 	Field('column_order','integer'),
 	Field('width'),
 	)
+
+
+
+db.define_table('coned_ra_elec',
+	Field('account_number'),
+	Field('start_date','datetime'),
+	Field('end_date','datetime'),
+	Field('electric_usage_kwh'),
+	Field('reading_type'),
+	Field('kvars'),
+	Field('electric_demand_kw'),
+	Field('retail_access_amount_usd'),
+	)

@@ -663,3 +663,18 @@ success!
 timestamp: 2015-08-09T14:10:16.358848
 ALTER TABLE aws_core_columns ADD width VARCHAR(512);
 success!
+timestamp: 2015-08-16T10:39:59.940584
+CREATE TABLE coned_ra_elec(
+    id SERIAL PRIMARY KEY,
+    start_date TIMESTAMP,
+    end_date TIMESTAMP,
+    electric_usage_kwh VARCHAR(512),
+    reading_type VARCHAR(512),
+    kvars VARCHAR(512),
+    electric_demand_kw VARCHAR(512),
+    retail_access_amount_usd VARCHAR(512)
+);
+success!
+timestamp: 2015-08-16T10:44:55.652287
+ALTER TABLE coned_ra_elec ADD account_number VARCHAR(512);
+success!

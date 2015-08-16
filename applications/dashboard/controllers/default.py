@@ -565,7 +565,7 @@ def parse_logfile_from_db():
             line = line.strip()
             cells = line.split(',')
 
-            device_id = 'TEST_3'
+            device_id = 'TEST_4'
             timestamp = cells[0][1:-1]
 
             data=dict(
@@ -1202,3 +1202,41 @@ def das_test():
 def child_rows():
     return dict()
 
+
+
+
+def selenium_test():
+
+    from wantsome import coned_ra_elec
+
+    account_list=[
+        '435121525600002',
+        '442001042200018',
+        # '494122328740001',
+        # '411037802500004',
+        # '494053608610004',
+        # '494152624010007',
+        # '494192416550026',
+        # '494102313200005',
+        # '494102313300003',
+        # '494112308693007',
+        # '494111110330006',
+        # '494112308691001',
+        # '494112308692009',
+        # '494111022800005',
+        ]
+
+    all_data=[]
+    for account_number in account_list:
+        data = coned_ra_elec(account_number)
+
+        for row in data:
+            #print row
+            db.coned_ra_elec.update_or_insert((db.coned_ra_elec.account_number==row['account_number']) & (db.coned_ra_elec.start_date==row['start_date']) & (db.coned_ra_elec.end_date==row['end_date']),**row)
+
+            db.commit()
+
+        all_data.append(data)
+
+
+    return dict() #data=all_data)
