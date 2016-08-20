@@ -676,13 +676,19 @@ def ajax_aws_table():
 
     for record in all_entries:
 
+
+
+
         record_dict=dict()
 
         for name_value_pair in record.items():
 
             record_dict[name_value_pair[0]]=name_value_pair[1]
 
+        record_dict['TABLE AND GRAPH']='<a href="/device/'+record_dict['device_id']+'">CLICK HERE</a>'
+
         data_LOD.append(record_dict)
+
         
     data_dict['data']=data_LOD
 

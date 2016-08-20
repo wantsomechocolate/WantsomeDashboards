@@ -19,6 +19,14 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "applications/dashboard/controllers/default.py",
+			"settings":
+			{
+				"buffer_size": 40361,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -52,10 +60,22 @@
 	},
 	"expanded_folders":
 	[
-		"/home/wantsomechan/Projects/WantsomeDashboards"
+		"/home/wantsomechan/Projects/WantsomeDashboards",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/controllers",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/static/js",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/views",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/views/default"
 	],
 	"file_history":
 	[
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/static/js/wsd.js",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/views/default/aws_table.html",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/controllers/default.py",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/views/default/device.html",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/modules/wantsome.py",
+		"/home/wantsomechan/Projects/WantsomeDashboards/applications/dashboard/static/robots.txt",
 		"/home/wantsomechan/Projects/RealPython/RealPythonProjects/django-bloggy/bloggy_project/blog/admin.py",
 		"/home/wantsomechan/Projects/RealPython/RealPythonProjects/django-bloggy/bloggy_project/blog/tests.py",
 		"/home/wantsomechan/Projects/RealPython/RealPythonProjects/django-bloggy/bloggy_project/blog/models.py",
@@ -84,7 +104,7 @@
 	],
 	"find":
 	{
-		"height": 22.0
+		"height": 32.0
 	},
 	"find_in_files":
 	{
@@ -98,6 +118,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"aws_table",
+			"device",
+			"device_",
+			"log_file",
+			"hash key",
+			"timeseriestable",
+			"timeseries",
+			"timeseries_data",
+			"time_series_data",
+			"das_attributes",
+			"das",
 			"media_root",
 			"gitignore",
 			"env"
@@ -118,8 +149,39 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "applications/dashboard/controllers/default.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 40361,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -200,7 +262,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 156.0,
+	"side_bar_width": 289.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
