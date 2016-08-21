@@ -64,6 +64,40 @@ response.formstyle = myconf.take('forms.formstyle')  # or 'bootstrap3_stacked' o
 response.form_label_separator = myconf.take('forms.separator')
 
 
+
+
+###########################################################################################################
+###########################################################################################################
+###########################################################################################################
+
+## I am having problems with permissions
+## How bad is it to have this here?
+import psycopg2
+import sys, os
+import urlparse
+
+## Get URI
+uri = os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+
+## Get username
+result = urlparse.urlparse(uri)
+username = result.username
+
+## Open connection, start cursor, grant privileges
+connection = psycopg2.connect(uri)
+cursor = connection.cursor()
+cursor.execute("""GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO """+username+""";""")
+
+## Commit changes
+connection.commit()
+
+###########################################################################################################
+###########################################################################################################
+###########################################################################################################
+
+
+
+
 ## (optional) optimize handling of static files
 # response.optimize_css = 'concat,minify,inline'
 # response.optimize_js = 'concat,minify,inline'
