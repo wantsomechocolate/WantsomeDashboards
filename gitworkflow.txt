@@ -1,16 +1,25 @@
+STARTING WORK
 
-on branch master
+git checkout master
+git pull origin master
+
+
+** Make some changes **
+
 git add -A
 git commit -m "message"
-
 git push origin master
+
+
+PUSHING TO HEROKU
 git checkout heroku
 git rebase master
-
 git push -f heroku heroku:master
+git checkout master
 
+
+
+
+OTHER STUFF
 git push -f heroku master:master
-
 delete heroku branch and recreate everytime?
-
-get checkout master
