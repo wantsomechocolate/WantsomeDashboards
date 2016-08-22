@@ -27,8 +27,48 @@ if not request.env.web2py_runtime_gae:
 
 
     if 'RUNNING_ON_HEROKU' in os.environ:
-        uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
-        db = DAL(uri, pool_size=10)
+        
+        try:
+
+            uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+            db = DAL(uri, pool_size=10)
+
+        except:
+
+            ###########################################################################################################
+            ###########################################################################################################
+            ###########################################################################################################
+
+            ## I am having problems with permissions
+            ## How bad is it to have this here?
+            import psycopg2
+            import sys, os
+            import urlparse
+
+            ## Get URI
+            uri = os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+
+            ## Get username
+            result = urlparse.urlparse(uri)
+            username = result.username
+
+            ## Open connection, start cursor, grant privileges
+            connection = psycopg2.connect(uri)
+            cursor = connection.cursor()
+            cursor.execute("""GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO """+username+""";""")
+
+            ## Commit changes
+            connection.commit()
+
+            ###########################################################################################################
+            ###########################################################################################################
+            ###########################################################################################################
+
+
+            uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+            db = DAL(uri, pool_size=10)
+
+
 
     elif 'RUNNING_ON_BEANSTALK' in os.environ:
         uri = "mysql://%(RDS_USERNAME)s:%(RDS_PASSWORD)s@%(RDS_HOSTNAME)s:%(RDS_PORT)s/%(RDS_DB_NAME)s" % os.environ
@@ -38,8 +78,45 @@ if not request.env.web2py_runtime_gae:
     else:
         # db = DAL(myconf.take('db.uri'), pool_size=myconf.take('db.pool_size', cast=int), check_reserved=['all'])
 
-        uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
-        db = DAL(uri, pool_size=10)
+        try:
+
+            uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+            db = DAL(uri, pool_size=10)
+
+        except:
+
+            ###########################################################################################################
+            ###########################################################################################################
+            ###########################################################################################################
+
+            ## I am having problems with permissions
+            ## How bad is it to have this here?
+            import psycopg2
+            import sys, os
+            import urlparse
+
+            ## Get URI
+            uri = os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+
+            ## Get username
+            result = urlparse.urlparse(uri)
+            username = result.username
+
+            ## Open connection, start cursor, grant privileges
+            connection = psycopg2.connect(uri)
+            cursor = connection.cursor()
+            cursor.execute("""GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO """+username+""";""")
+
+            ## Commit changes
+            connection.commit()
+
+            ###########################################################################################################
+            ###########################################################################################################
+            ###########################################################################################################
+
+
+            uri=os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
+            db = DAL(uri, pool_size=10)
 
         # uri = "mysql://%(RDS_USERNAME)s:%(RDS_PASSWORD)s@%(RDS_HOSTNAME)s:%(RDS_PORT)s/%(RDS_DB_NAME)s" % os.environ
         # db = DAL(uri, pool_size=10)
@@ -66,34 +143,7 @@ response.form_label_separator = myconf.take('forms.separator')
 
 
 
-###########################################################################################################
-###########################################################################################################
-###########################################################################################################
 
-## I am having problems with permissions
-## How bad is it to have this here?
-import psycopg2
-import sys, os
-import urlparse
-
-## Get URI
-uri = os.environ['WANTSOMEDASHBOARDS_DATABASE_URL']
-
-## Get username
-result = urlparse.urlparse(uri)
-username = result.username
-
-## Open connection, start cursor, grant privileges
-connection = psycopg2.connect(uri)
-cursor = connection.cursor()
-cursor.execute("""GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO """+username+""";""")
-
-## Commit changes
-connection.commit()
-
-###########################################################################################################
-###########################################################################################################
-###########################################################################################################
 
 
 
