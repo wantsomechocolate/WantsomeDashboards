@@ -16,3 +16,4 @@ cursor.execute("""GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO """+use
 
 ## Commit changes
 connection.commit()
+connection.close()

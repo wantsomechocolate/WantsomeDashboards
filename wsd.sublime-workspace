@@ -31,7 +31,7 @@
 			"file": "applications/dashboard/models/db.py",
 			"settings":
 			{
-				"buffer_size": 5890,
+				"buffer_size": 7882,
 				"line_ending": "Unix"
 			}
 		},
@@ -39,7 +39,7 @@
 			"file": "gitworkflow.txt",
 			"settings":
 			{
-				"buffer_size": 249,
+				"buffer_size": 347,
 				"line_ending": "Unix",
 				"name": "gitworkflow.txt"
 			}
@@ -209,15 +209,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5890,
+						"buffer_size": 7882,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3719,
-								3719
+								4659,
+								4659
 							]
 						],
 						"settings":
@@ -227,7 +227,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 756.0,
+						"translation.y": 82.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,
@@ -239,15 +239,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 249,
+						"buffer_size": 347,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								249,
-								249
+								257,
+								257
 							]
 						],
 						"settings":
