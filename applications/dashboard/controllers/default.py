@@ -685,7 +685,9 @@ def ajax_aws_table():
 
             record_dict[name_value_pair[0]]=name_value_pair[1]
 
-        record_dict['TABLE AND GRAPH']='<a href="/device/'+record_dict['device_id']+'">CLICK HERE</a>'
+        if table_name=='device_id':
+            record_dict['TABLE AND GRAPH']='<a href="/device/'+record_dict['device_id']+'">CLICK HERE</a>'
+
 
         data_LOD.append(record_dict)
 
